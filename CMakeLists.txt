@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(hopfield VERSION 0.1.0)
+project(neuralnet VERSION 0.1.0)
 
 # abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
 include(CTest)
