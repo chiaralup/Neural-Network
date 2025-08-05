@@ -19,6 +19,7 @@ int main() {
   if (!texture1.loadFromFile("pillars.jpg")) {
     return -1;
   }
+  
   sf::Texture texture2;
   if (!texture2.loadFromFile("merginggalaxies.jpg")) {
     return -1;

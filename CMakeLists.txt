@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(neuralnet VERSION 0.1.0)
+project(hopfield VERSION 0.1.0)
 
 # abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
 include(CTest)
@@ -48,7 +48,7 @@ target_link_libraries(neuralnet PRIVATE sfml-graphics)
 if (BUILD_TESTING)
 
   # aggiungi l'eseguibile progetto.t
-  add_executable(neuralnet.t file.t.cpp)
+  add_executable(neuralnet.t)
   # aggiungi l'eseguibile progetto.t alla lista dei test
   add_test(NAME neuralnet.t COMMAND neuralnet.t)
 
