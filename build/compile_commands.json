@@ -1,0 +1,38 @@
+[
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"Debug\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -g -fsanitize=address,undefined -std=c++20 -o CMakeFiles/neuralnet.dir/Debug/main.cpp.o -c /home/chiara/programmazione/rete/main.cpp",
+  "file": "/home/chiara/programmazione/rete/main.cpp",
+  "output": "CMakeFiles/neuralnet.dir/Debug/main.cpp.o"
+},
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"Release\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -O3 -DNDEBUG -std=c++20 -o CMakeFiles/neuralnet.dir/Release/main.cpp.o -c /home/chiara/programmazione/rete/main.cpp",
+  "file": "/home/chiara/programmazione/rete/main.cpp",
+  "output": "CMakeFiles/neuralnet.dir/Release/main.cpp.o"
+},
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"RelWithDebInfo\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -O2 -g -DNDEBUG -std=c++20 -o CMakeFiles/neuralnet.dir/RelWithDebInfo/main.cpp.o -c /home/chiara/programmazione/rete/main.cpp",
+  "file": "/home/chiara/programmazione/rete/main.cpp",
+  "output": "CMakeFiles/neuralnet.dir/RelWithDebInfo/main.cpp.o"
+},
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"Debug\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -g -fsanitize=address,undefined -std=c++20 -o CMakeFiles/neuralnet.t.dir/Debug/test.cpp.o -c /home/chiara/programmazione/rete/test.cpp",
+  "file": "/home/chiara/programmazione/rete/test.cpp",
+  "output": "CMakeFiles/neuralnet.t.dir/Debug/test.cpp.o"
+},
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"Release\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -O3 -DNDEBUG -std=c++20 -o CMakeFiles/neuralnet.t.dir/Release/test.cpp.o -c /home/chiara/programmazione/rete/test.cpp",
+  "file": "/home/chiara/programmazione/rete/test.cpp",
+  "output": "CMakeFiles/neuralnet.t.dir/Release/test.cpp.o"
+},
+{
+  "directory": "/home/chiara/programmazione/rete/build",
+  "command": "/usr/bin/c++ -DCMAKE_INTDIR=\\\"RelWithDebInfo\\\"  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_SANITIZE_STD_ALLOCATOR -O2 -g -DNDEBUG -std=c++20 -o CMakeFiles/neuralnet.t.dir/RelWithDebInfo/test.cpp.o -c /home/chiara/programmazione/rete/test.cpp",
+  "file": "/home/chiara/programmazione/rete/test.cpp",
+  "output": "CMakeFiles/neuralnet.t.dir/RelWithDebInfo/test.cpp.o"
+}
+]

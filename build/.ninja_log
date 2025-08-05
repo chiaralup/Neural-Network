@@ -1,0 +1,5 @@
+# ninja log v5
+1	1126	1754384280026948410	CMakeFiles/neuralnet.dir/Debug/main.cpp.o	20ba9d36f8577f3e
+1127	1254	1754384280154950645	Debug/neuralnet	b6bfc3dfc75dde75
+2	7284	1754384286176055808	CMakeFiles/neuralnet.t.dir/Debug/test.cpp.o	dd7ccbf5a5c1e8b6
+7285	7442	1754384286341058690	Debug/neuralnet.t	1ca7776bf50a14bb
