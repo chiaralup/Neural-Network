@@ -19,7 +19,7 @@ int main() {
   auto bx{pillars.x / deep.x};  // forse il tipo va specificato
   auto by{pillars.y / deep.y};
 
- std::vector<Pixel> p;
+  std::vector<Pixel> p;
 
   for (unsigned int r = 0; r < pillars.x; r++) {
     double x{static_cast<double>(r) / static_cast<double>(bx)};
@@ -64,7 +64,10 @@ int main() {
 
   for (unsigned int r = 0; r < deep.x; r++) {
     for (unsigned int c = 0; c < deep.y; c++) {
-      double m{(p.pr + p.pg + p.pb) / 3.};
+      unsigned int index = r * deep.y + c;  // vettore ad un dimensione
+      Pixel& pix = p[index];  // riferimento alla struct, vettore che ci serve
+      double m{(pix.pr + pix.pg + pix.pb) / 3.0};
+
       if (m < 127) {
         pattern2.push_back(-1);
       } else {
