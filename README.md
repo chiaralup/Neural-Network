@@ -4,3 +4,6 @@ cmake --build build --config Debug
 cmake --build build --config Debug --target test
 cmake --build build --config Release
 cmake --build build --config Release --target test
+
+./build/Debug/neuralnet
+./build/Release/neuralnet
