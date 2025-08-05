@@ -48,7 +48,7 @@ target_link_libraries(neuralnet PRIVATE sfml-graphics)
 if (BUILD_TESTING)
 
   # aggiungi l'eseguibile progetto.t
-  add_executable(neuralnet.t)
+  add_executable(neuralnet.t test.cpp)
   # aggiungi l'eseguibile progetto.t alla lista dei test
   add_test(NAME neuralnet.t COMMAND neuralnet.t)
 
