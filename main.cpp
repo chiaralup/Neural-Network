@@ -13,6 +13,24 @@ int main() {
   sf::Texture texture1;
   sf::Texture texture2;
 
+  if (!image1.loadFromFile("pillars.jpg")) {
+    std::cerr << "Errore nel caricamento dell'immagine" << '\n';
+    return -1;
+  }
+
+  if (!image2.loadFromFile("deepsky.jpg")) {
+    std::cerr << "Errore nel caricamento dell'immagine" << '\n';
+    return -1;
+  }
+
+  if (!texture1.loadFromFile("pillars.jpg")) {
+    return -1;
+  }
+
+  if (!texture2.loadFromFile("deepsky.jpg")) {
+    return -1;
+  }
+
   auto pillars{image1.getSize()};
   auto deep{image2.getSize()};
 
@@ -21,8 +39,7 @@ int main() {
 
   std::vector<Pixel> p;
 
-  auto [width, height] = texture2.getSize();
-  std::vector<uint8_t> pixels(width * height * 4);  // preso da sfml
+  std::vector<uint8_t> pixels(pillars.x * pillars.y * 4);  // preso da sfml
 
   for (unsigned int c = 0; c < pillars.y; c++) {
     double y{static_cast<double>(c) / static_cast<double>(by)};
@@ -48,17 +65,28 @@ int main() {
 
       p.push_back({pr, pg, pb});
 
-      int f = (c * static_cast<int>(pillars.x) + r) * (+4);
+      auto f = (c * pillars.x + r) * (+4);
 
       pixels[f] = static_cast<unsigned char>(pr);
       pixels[f + 1] = static_cast<unsigned char>(pg);
       pixels[f + 2] = static_cast<unsigned char>(pb);
 
-      //pixels[static_cast<std::size_t>(f + 2)] = static_cast<unsigned char>(pb);
+      // pixels[static_cast<std::size_t>(f + 2)] = static_cast<unsigned
+      // char>(pb);
     }
   }
 
-  texture2.update(pixels.data());
+  // texture2.update(pixels.data());
+
+  sf::Image resizedimage;
+  resizedimage.create(pillars.x, pillars.y, pixels.data());
+
+  sf::Texture resizedtexture;
+  resizedtexture.loadFromImage(resizedimage);
+
+  sf::Sprite resizedSprite;
+  resizedSprite.setTexture(resizedtexture);
+
 
   std::vector<int> pattern1;
   std::vector<int> pattern2;
@@ -91,24 +119,6 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Neural Network");
 
-  if (!image1.loadFromFile("pillars.jpg")) {
-    std::cerr << "Errore nel caricamento dell'immagine" << '\n';
-    return -1;
-  }
-
-  if (!image2.loadFromFile("deepsky.jpg")) {
-    std::cerr << "Errore nel caricamento dell'immagine" << '\n';
-    return -1;
-  }
-
-  if (!texture1.loadFromFile("pillars.jpg")) {
-    return -1;
-  }
-
-  if (!texture2.loadFromFile("deepsky.jpg")) {
-    return -1;
-  }
-
   // std::cout << image1.getSize().x << " " << image1.getSize().y << '\n';
   // std::cout << image2.getSize().x << " " << image2.getSize().y << '\n';
 
@@ -124,7 +134,7 @@ int main() {
     }
 
     window.clear();
-    window.draw(sprite2);
+    window.draw(resizedSprite);
     window.display();
   }
 
