@@ -70,23 +70,9 @@ int main() {
       pixels[f] = static_cast<unsigned char>(pr);
       pixels[f + 1] = static_cast<unsigned char>(pg);
       pixels[f + 2] = static_cast<unsigned char>(pb);
-
-      // pixels[static_cast<std::size_t>(f + 2)] = static_cast<unsigned
-      // char>(pb);
+      pixels[f + 3] = 255; //completamente opaco
     }
   }
-
-  // texture2.update(pixels.data());
-
-  sf::Image resizedimage;
-  resizedimage.create(pillars.x, pillars.y, pixels.data());
-
-  sf::Texture resizedtexture;
-  resizedtexture.loadFromImage(resizedimage);
-
-  sf::Sprite resizedSprite;
-  resizedSprite.setTexture(resizedtexture);
-
 
   std::vector<int> pattern1;
   std::vector<int> pattern2;
@@ -105,7 +91,7 @@ int main() {
 
   for (unsigned int r = 0; r < deep.x; r++) {
     for (unsigned int c = 0; c < deep.y; c++) {
-      unsigned int index = r * deep.y + c;  // vettore ad un dimensione
+      unsigned int index = c * pillars.x + r;  // vettore ad un dimensione
       Pixel& pix = p[index];  // riferimento alla struct, vettore che ci serve
       double m{(pix.pr + pix.pg + pix.pb) / 3.0};
 
@@ -126,6 +112,15 @@ int main() {
   sprite1.setTexture(texture1);
   sf::Sprite sprite2;
   sprite2.setTexture(texture2);
+
+  sf::Image resizedimage;
+  resizedimage.create(pillars.x, pillars.y, pixels.data());
+
+  sf::Texture resizedtexture;
+  resizedtexture.loadFromImage(resizedimage);
+
+  sf::Sprite resizedSprite;
+  resizedSprite.setTexture(resizedtexture);
 
   while (window.isOpen()) {
     sf::Event event;
