@@ -1,11 +1,12 @@
 #include <SFML/Graphics.hpp>
+#include <cassert>
 #include <iostream>
 
 int main() {
   struct Pixel {
-    double pr;
-    double pg;
-    double pb;
+    unsigned int pr;
+    unsigned int pg;
+    unsigned int pb;
   };
 
   sf::Image image1;
@@ -56,12 +57,15 @@ int main() {
       sf::Color p3 = image2.getPixel(i, j + 1);
       sf::Color p4 = image2.getPixel(i + 1, j + 1);
 
-      double pr = (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r +
-                  (1 - s) * t * p3.r + s * t * p4.r;
-      double pg = (1 - s) * (1 - t) * p1.g + s * (1 - t) * p2.g +
-                  (1 - s) * t * p3.g + s * t * p4.g;
-      double pb = (1 - s) * (1 - t) * p1.b + s * (1 - t) * p2.b +
-                  (1 - s) * t * p3.b + s * t * p4.b;
+      unsigned int pr = static_cast<unsigned int>(
+          (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r + (1 - s) * t * p3.r +
+          s * t * p4.r);
+      unsigned int pg = static_cast<unsigned int>(
+          (1 - s) * (1 - t) * p1.g + s * (1 - t) * p2.g + (1 - s) * t * p3.g +
+          s * t * p4.g);
+      unsigned int pb = static_cast<unsigned int>(
+          (1 - s) * (1 - t) * p1.b + s * (1 - t) * p2.b + (1 - s) * t * p3.b +
+          s * t * p4.b);
 
       p.push_back({pr, pg, pb});
 
@@ -70,7 +74,7 @@ int main() {
       pixels[f] = static_cast<unsigned char>(pr);
       pixels[f + 1] = static_cast<unsigned char>(pg);
       pixels[f + 2] = static_cast<unsigned char>(pb);
-      pixels[f + 3] = 255; //completamente opaco
+      pixels[f + 3] = 255;  // completamente opaco
     }
   }
 
@@ -81,25 +85,27 @@ int main() {
     for (unsigned int c = 0; c < pillars.y; c++) {
       sf::Color pix = image1.getPixel(r, c);
       double m{(pix.r + pix.g + pix.b) / 3.};
-      if (m < 127) {
-        pattern1.push_back(-1);
-      } else {
-        pattern1.push_back(+1);
-      }
+
+      pattern1.push_back(m < 127 ? -1 : 1);
+      // l'ho cambiato in operatore ternario, invece che ciclo if
     }
   }
 
+  // credo che il problema sia in questo ciclo, perchè stiamo lavorando su deep,
+  // ma usando le grandezze di pillars, l'assert fallisce sempre
+  // dovremmo provare a scrivere un parte di programma che controlla il massimo
+  // numero di pixel sia 255
+
   for (unsigned int r = 0; r < deep.x; r++) {
     for (unsigned int c = 0; c < deep.y; c++) {
-      unsigned int index = c * pillars.x + r;  // vettore ad un dimensione
+      unsigned int index = c * pillars.x + r;  // vettore ad una dimensione
+
+      assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
+
       Pixel& pix = p[index];  // riferimento alla struct, vettore che ci serve
       double m{(pix.pr + pix.pg + pix.pb) / 3.0};
 
-      if (m < 127) {
-        pattern2.push_back(-1);
-      } else {
-        pattern2.push_back(+1);
-      }
+      pattern2.push_back(m < 127 ? -1 : 1);
     }
   }
 
