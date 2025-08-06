@@ -35,19 +35,21 @@ int main() {
   auto pillars{image1.getSize()};
   auto deep{image2.getSize()};
 
-  auto bx{pillars.x / deep.x};  // forse il tipo va specificato
-  auto by{pillars.y / deep.y};
+  unsigned int width{pillars.x};
+  unsigned int height{pillars.y};
+
+  double bx{
+      static_cast<double>(width / deep.x)};  // forse il tipo va specificato
+  double by{static_cast<double>(height / deep.y)};
 
   std::vector<Pixel> p;
 
-  std::vector<uint8_t> pixels(pillars.x * pillars.y * 4);  // preso da sfml
-
-  for (unsigned int c = 0; c < pillars.y; c++) {
+  for (unsigned int c = 0; c < height; c++) {
     double y{static_cast<double>(c) / static_cast<double>(by)};
     unsigned int j{static_cast<unsigned int>(y)};
     double t{y - j};
 
-    for (unsigned int r = 0; r < pillars.x; r++) {
+    for (unsigned int r = 0; r < width; r++) {
       double x{static_cast<double>(r) / static_cast<double>(bx)};
       unsigned int i{static_cast<unsigned int>(x)};
       double s{x - i};
@@ -56,6 +58,8 @@ int main() {
       sf::Color p2 = image2.getPixel(i + 1, j);
       sf::Color p3 = image2.getPixel(i, j + 1);
       sf::Color p4 = image2.getPixel(i + 1, j + 1);
+
+      assert(i + 1 <= width && j + 1 <= height);
 
       unsigned int pr = static_cast<unsigned int>(
           (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r + (1 - s) * t * p3.r +
@@ -68,21 +72,14 @@ int main() {
           s * t * p4.b);
 
       p.push_back({pr, pg, pb});
-
-      auto f = (c * pillars.x + r) * (+4);
-
-      pixels[f] = static_cast<unsigned char>(pr);
-      pixels[f + 1] = static_cast<unsigned char>(pg);
-      pixels[f + 2] = static_cast<unsigned char>(pb);
-      pixels[f + 3] = 255;  // completamente opaco
     }
   }
 
   std::vector<int> pattern1;
   std::vector<int> pattern2;
 
-  for (unsigned int r = 0; r < pillars.x; r++) {
-    for (unsigned int c = 0; c < pillars.y; c++) {
+  for (unsigned int r = 0; r < width; r++) {
+    for (unsigned int c = 0; c < height; c++) {
       sf::Color pix = image1.getPixel(r, c);
       double m{(pix.r + pix.g + pix.b) / 3.};
 
@@ -96,9 +93,9 @@ int main() {
   // dovremmo provare a scrivere un parte di programma che controlla il massimo
   // numero di pixel sia 255
 
-  for (unsigned int r = 0; r < deep.x; r++) {
-    for (unsigned int c = 0; c < deep.y; c++) {
-      unsigned int index = c * pillars.x + r;  // vettore ad una dimensione
+  for (unsigned int r = 0; r < width; r++) {
+    for (unsigned int c = 0; c < height; c++) {
+      unsigned int index = c * width + r;  // vettore ad una dimensione
 
       assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
 
@@ -119,14 +116,12 @@ int main() {
   sf::Sprite sprite2;
   sprite2.setTexture(texture2);
 
-  sf::Image resizedimage;
-  resizedimage.create(pillars.x, pillars.y, pixels.data());
-
-  sf::Texture resizedtexture;
-  resizedtexture.loadFromImage(resizedimage);
-
-  sf::Sprite resizedSprite;
-  resizedSprite.setTexture(resizedtexture);
+  sf::Image resizedimage2;
+  resizedimage2.create(width, height, pixels.data());
+  sf::Texture resizedtexture2;
+  resizedtexture2.loadFromImage(resizedimage2);
+  sf::Sprite resizedsprite2;
+  resizedsprite2.setTexture(resizedtexture2);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -135,7 +130,7 @@ int main() {
     }
 
     window.clear();
-    window.draw(resizedSprite);
+    window.draw(resizedsprite2);
     window.display();
   }
 
