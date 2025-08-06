@@ -19,7 +19,7 @@ int main() {
     return -1;
   }
 
-  if (!image2.loadFromFile("deepsky.jpg")) {
+  if (!image2.loadFromFile("orecchino.png")) {
     std::cerr << "Errore nel caricamento dell'immagine" << '\n';
     return -1;
   }
@@ -28,7 +28,7 @@ int main() {
     return -1;
   }
 
-  if (!texture2.loadFromFile("deepsky.jpg")) {
+  if (!texture2.loadFromFile("orecchino.png")) {
     return -1;
   }
 
@@ -45,22 +45,22 @@ int main() {
 
   std::vector<Pixel> p;
 
-  for (unsigned int c = 0; c < width; c++) {
-    double x{static_cast<double>(c) / static_cast<double>(bx)};
-    unsigned int i{static_cast<unsigned int>(x)};
-    double s{x - i};
+  for (unsigned int r = 0; r < height; r++) {
+    double y{static_cast<double>(r) / static_cast<double>(by)};
+    unsigned int j{static_cast<unsigned int>(y)};
+    double t{y - j};
 
-    for (unsigned int r = 0; r < height; r++) {
-      double y{static_cast<double>(r) / static_cast<double>(by)};
-      unsigned int j{static_cast<unsigned int>(y)};
-      double t{y - j};
+    for (unsigned int c = 0; c < width; c++) {
+      double x{static_cast<double>(c) / static_cast<double>(bx)};
+      unsigned int i{static_cast<unsigned int>(x)};
+      double s{x - i};
 
       sf::Color p1 = image2.getPixel(i, j);
       sf::Color p2 = image2.getPixel(i + 1, j);
       sf::Color p3 = image2.getPixel(i, j + 1);
       sf::Color p4 = image2.getPixel(i + 1, j + 1);
 
-      //assert(i + 1 <= width && j + 1 <= height);
+      // assert(i + 1 <= width && j + 1 <= height);
 
       unsigned int pr = static_cast<unsigned int>(
           (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r + (1 - s) * t * p3.r +
@@ -79,24 +79,19 @@ int main() {
   std::vector<int> pattern1;
   std::vector<int> pattern2;
 
-  for (unsigned int r = 0; r < width; r++) {
-    for (unsigned int c = 0; c < height; c++) {
-      sf::Color pix = image1.getPixel(r, c);
-      double m{(pix.r + pix.g + pix.b) / 3.};
+  for (unsigned int r = 0; r < height; r++) {
+    for (unsigned int c = 0; c < width; c++) {
+      sf::Color pix = image1.getPixel(c, r);
+      double m{(pix.r + pix.g + pix.b) / 3.0};
 
       pattern1.push_back(m < 127 ? -1 : 1);
       // l'ho cambiato in operatore ternario, invece che ciclo if
     }
   }
 
-  // credo che il problema sia in questo ciclo, perchè stiamo lavorando su deep,
-  // ma usando le grandezze di pillars, l'assert fallisce sempre
-  // dovremmo provare a scrivere un parte di programma che controlla il massimo
-  // numero di pixel sia 255
-
-  for (unsigned int r = 0; r < width; r++) {     // riga
-    for (unsigned int c = 0; c < height; c++) {  // colonna
-      unsigned int index = c * width + r;        // vettore ad una dimensione
+  for (unsigned int r = 0; r < width; r++) {
+    for (unsigned int c = 0; c < height; c++) {
+      unsigned int index = c * width + r;  // vettore ad una dimensione
 
       assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
 
@@ -115,7 +110,6 @@ int main() {
             << std::count(pattern2.begin(), pattern2.end(), 1) << '\n';
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Neural Network");
-
   // std::cout << image1.getSize().x << " " << image1.getSize().y << '\n';
   // std::cout << image2.getSize().x << " " << image2.getSize().y << '\n';
 
@@ -124,22 +118,39 @@ int main() {
   sf::Sprite sprite2;
   sprite2.setTexture(texture2);
 
-  sf::Image resizedimage2;
-  resizedimage2.create(width, height, sf::Color::Black);
+  sf::Image resizedimage1;
+  resizedimage1.create(width, height, sf::Color::Black);
 
-  for (unsigned int i = 0; i < pattern2.size(); i++) {
+  for (unsigned int i = 0; i < pattern1.size(); i++) {
     unsigned int row{(i / width)};
     unsigned int col{i % width};
 
-    if (pattern2[i] == 1) {
-      resizedimage2.setPixel(col, row, sf::Color::White);
+    if (pattern1[i] == 1) {
+      resizedimage1.setPixel(col, row, sf::Color::White);
     }
   }
 
-  sf::Texture resizedtexture2;
-  resizedtexture2.loadFromImage(resizedimage2);
-  sf::Sprite resizedsprite2;
-  resizedsprite2.setTexture(resizedtexture2);
+  sf::Texture resizedtexture1;
+  resizedtexture1.loadFromImage(resizedimage1);
+  sf::Sprite resizedsprite1;
+  resizedsprite1.setTexture(resizedtexture1);
+
+  //  sf::Image resizedimage2;
+  //  resizedimage2.create(width, height, sf::Color::Black);
+  //
+  //  for (unsigned int i = 0; i < pattern2.size(); i++) {
+  //    unsigned int row{i / width};
+  //    unsigned int col{i % width};
+  //
+  //    if (pattern2[i] == 1) {
+  //      resizedimage2.setPixel(col, row, sf::Color::White);
+  //    }
+  //  }
+
+  //  sf::Texture resizedtexture2;
+  //  resizedtexture2.loadFromImage(resizedimage2);
+  //  sf::Sprite resizedsprite2;
+  //  resizedsprite2.setTexture(resizedtexture2);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -148,7 +159,7 @@ int main() {
     }
 
     window.clear();
-    window.draw(resizedsprite2);
+    window.draw(resizedsprite1);
     window.display();
   }
 
