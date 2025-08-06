@@ -21,15 +21,18 @@ int main() {
 
   std::vector<Pixel> p;
 
-  for (unsigned int r = 0; r < pillars.x; r++) {
-    double x{static_cast<double>(r) / static_cast<double>(bx)};
-    unsigned int i{static_cast<unsigned int>(x)};
-    double s{x - i};
+  auto [width, height] = texture2.getSize();
+  std::vector<uint8_t> pixels(width * height * 4);  // preso da sfml
 
-    for (unsigned int c = 0; c < pillars.y; c++) {
-      double y{static_cast<double>(c) / static_cast<double>(by)};
-      unsigned int j{static_cast<unsigned int>(y)};
-      double t{y - j};
+  for (unsigned int c = 0; c < pillars.y; c++) {
+    double y{static_cast<double>(c) / static_cast<double>(by)};
+    unsigned int j{static_cast<unsigned int>(y)};
+    double t{y - j};
+
+    for (unsigned int r = 0; r < pillars.x; r++) {
+      double x{static_cast<double>(r) / static_cast<double>(bx)};
+      unsigned int i{static_cast<unsigned int>(x)};
+      double s{x - i};
 
       sf::Color p1 = image2.getPixel(i, j);
       sf::Color p2 = image2.getPixel(i + 1, j);
@@ -44,8 +47,18 @@ int main() {
                   (1 - s) * t * p3.b + s * t * p4.b;
 
       p.push_back({pr, pg, pb});
+
+      int f = (c * static_cast<int>(pillars.x) + r) * (+4);
+
+      pixels[f] = static_cast<unsigned char>(pr);
+      pixels[f + 1] = static_cast<unsigned char>(pg);
+      pixels[f + 2] = static_cast<unsigned char>(pb);
+
+      //pixels[static_cast<std::size_t>(f + 2)] = static_cast<unsigned char>(pb);
     }
   }
+
+  texture2.update(pixels.data());
 
   std::vector<int> pattern1;
   std::vector<int> pattern2;
@@ -76,10 +89,6 @@ int main() {
     }
   }
 
-  // auto [width, height] = texture2.getSize();
-  // std::vector<uint8_t> pixels(width * height * 3);  // preso da sfml
-  // texture2.update(pixels.data());
-
   sf::RenderWindow window(sf::VideoMode(800, 600), "Neural Network");
 
   if (!image1.loadFromFile("pillars.jpg")) {
@@ -100,23 +109,24 @@ int main() {
     return -1;
   }
 
-  std::cout << image1.getSize().x << " " << image1.getSize().y << '\n';
-  std::cout << image2.getSize().x << " " << image2.getSize().y << '\n';
+  // std::cout << image1.getSize().x << " " << image1.getSize().y << '\n';
+  // std::cout << image2.getSize().x << " " << image2.getSize().y << '\n';
 
-  // sf::Sprite sprite1;
-  // sprite1.setTexture(texture1);
-  // sf::Sprite sprite2;
-  // sprite2.setTexture(texture2);
-  //
-  // while (window.isOpen()) {
-  //   sf::Event event;
-  //   while (window.pollEvent(event)) {
-  //     if (event.type == sf::Event::Closed) window.close();
-  //   }
-  //
-  //   window.clear();
-  //   window.display();
-  // }
-  //
-  // return 0;
+  sf::Sprite sprite1;
+  sprite1.setTexture(texture1);
+  sf::Sprite sprite2;
+  sprite2.setTexture(texture2);
+
+  while (window.isOpen()) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) window.close();
+    }
+
+    window.clear();
+    window.draw(sprite2);
+    window.display();
+  }
+
+  return 0;
 }
