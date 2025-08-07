@@ -166,17 +166,18 @@ int main() {
     window.display();
   }
 
-  std::vector<std::vector<int>> W;
   unsigned int N{width * height};
+  std::vector<std::vector<int>> W(N, std::vector<int>(N));
 
   for (unsigned int i{0}; i < N; ++i) {
     for (unsigned int j{0}; j < N; ++j) {
       if (i == j) {
         W[i][j] = 0;
       } else {
-        unsigned int sum{
-            (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j]) / N};
-        W[i][j] = sum;
+        double sum{(static_cast<double>(pattern1[i] * pattern1[j] +
+                                        pattern2[i] * pattern2[j])) /
+                   static_cast<double>(N)};
+        W[i][j] = static_cast<int>(sum);
       }
     }
   }
