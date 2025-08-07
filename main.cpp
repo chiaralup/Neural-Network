@@ -55,12 +55,12 @@ int main() {
       unsigned int i{static_cast<unsigned int>(x)};
       double s{x - i};
 
+      // assert(i + 1 <= width && j + 1 <= height);
+
       sf::Color p1 = image2.getPixel(i, j);
       sf::Color p2 = image2.getPixel(i + 1, j);
       sf::Color p3 = image2.getPixel(i, j + 1);
       sf::Color p4 = image2.getPixel(i + 1, j + 1);
-
-      // assert(i + 1 <= width && j + 1 <= height);
 
       unsigned int pr = static_cast<unsigned int>(
           (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r + (1 - s) * t * p3.r +
@@ -89,13 +89,13 @@ int main() {
     }
   }
 
-  for (unsigned int r = 0; r < width; r++) {
-    for (unsigned int c = 0; c < height; c++) {
-      unsigned int index = c * width + r;  // vettore ad una dimensione
+  for (unsigned int r = 0; r < height; r++) {
+    for (unsigned int c = 0; c < width; c++) {
+      unsigned int index = r * width + c;
 
       assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
 
-      Pixel& pix = p[index];  // riferimento alla struct, vettore che ci serve
+      Pixel& pix = p[index];
       double m{(pix.pr + pix.pg + pix.pb) / 3.0};
 
       pattern2.push_back(m < 127 ? -1 : 1);
@@ -118,39 +118,39 @@ int main() {
   sf::Sprite sprite2;
   sprite2.setTexture(texture2);
 
-  sf::Image resizedimage1;
-  resizedimage1.create(width, height, sf::Color::Black);
-
-  for (unsigned int i = 0; i < pattern1.size(); i++) {
-    unsigned int row{(i / width)};
-    unsigned int col{i % width};
-
-    if (pattern1[i] == 1) {
-      resizedimage1.setPixel(col, row, sf::Color::White);
-    }
-  }
-
-  sf::Texture resizedtexture1;
-  resizedtexture1.loadFromImage(resizedimage1);
-  sf::Sprite resizedsprite1;
-  resizedsprite1.setTexture(resizedtexture1);
-
-  //  sf::Image resizedimage2;
-  //  resizedimage2.create(width, height, sf::Color::Black);
+  //  sf::Image resizedimage1;
+  //  resizedimage1.create(width, height, sf::Color::Black);
   //
-  //  for (unsigned int i = 0; i < pattern2.size(); i++) {
+  //  for (unsigned int i = 0; i < pattern1.size(); i++) {
   //    unsigned int row{i / width};
   //    unsigned int col{i % width};
   //
-  //    if (pattern2[i] == 1) {
-  //      resizedimage2.setPixel(col, row, sf::Color::White);
+  //    if (pattern1[i] == 1) {
+  //      resizedimage1.setPixel(col, row, sf::Color::White);
   //    }
   //  }
+  //
+  //  sf::Texture resizedtexture1;
+  //  resizedtexture1.loadFromImage(resizedimage1);
+  //  sf::Sprite resizedsprite1;
+  //  resizedsprite1.setTexture(resizedtexture1);
 
-  //  sf::Texture resizedtexture2;
-  //  resizedtexture2.loadFromImage(resizedimage2);
-  //  sf::Sprite resizedsprite2;
-  //  resizedsprite2.setTexture(resizedtexture2);
+  sf::Image resizedimage2;
+  resizedimage2.create(width, height, sf::Color::Black);
+
+  for (unsigned int i = 0; i < pattern2.size(); i++) {
+    unsigned int row{i / width};
+    unsigned int col{i % width};
+
+    if (pattern2[i] == 1) {
+      resizedimage2.setPixel(col, row, sf::Color::White);
+    }
+  }
+
+  sf::Texture resizedtexture2;
+  resizedtexture2.loadFromImage(resizedimage2);
+  sf::Sprite resizedsprite2;
+  resizedsprite2.setTexture(resizedtexture2);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -159,7 +159,7 @@ int main() {
     }
 
     window.clear();
-    window.draw(resizedsprite1);
+    window.draw(resizedsprite2);
     window.display();
   }
 
