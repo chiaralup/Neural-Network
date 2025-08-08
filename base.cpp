@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "acquisition.cpp"
+// #include "acquisition.cpp"
 
 int main() {
   struct Pixel {
@@ -38,8 +38,8 @@ int main() {
   auto pillars{image1.getSize()};
   auto deep{image2.getSize()};
 
-  unsigned int width{pillars.x};
-  unsigned int height{pillars.y};
+  unsigned int width{150};
+  unsigned int height{200};
 
   double bx{static_cast<double>(width) / static_cast<double>(deep.x)};
   double by{static_cast<double>(height) / static_cast<double>(deep.y)};
@@ -172,6 +172,7 @@ int main() {
     window.draw(resizedsprite2);
     window.display();
   }
+
   // primo tentativo
   //  unsigned int N{width * height};
   //  std::vector<std::vector<int>> W(N, std::vector<int>(N));
@@ -232,27 +233,25 @@ int main() {
   //  file.close();
 
   // terzo tentativo
-  //   unsigned int N = width * height;
-  //
-  //   std::ofstream file("weight.txt");
-  //   if (!file.is_open()) {
-  //     throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
-  //   }
-  //
-  //   for (unsigned int i = 0; i < N; ++i) {
-  //     for (unsigned int j = 0; j < N; ++j) {
-  //       if (i == j) {
-  //         file << 0 << " ";
-  //       } else {
-  //         int val = static_cast<int>(
-  //             (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j]) /
-  //             static_cast<double>(N));
-  //         file << val << " ";
-  //       }
-  //     }
-  //     file << '\n';
-  //   }
-  //
-  //   file.close();
-  //
+  unsigned int N = width * height;
+
+  std::ofstream file("weight.txt");
+  if (!file.is_open()) {
+    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  }
+
+  for (unsigned int i = 0; i < N; ++i) {
+    for (unsigned int j = 0; j < N; ++j) {
+      if (i == j) {
+        file << 0 << " ";
+      } else {
+        double val = (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j]) /
+                     static_cast<double>(N);
+        file << val << " ";
+      }
+    }
+    file << '\n';
+  }
+
+  file.close();
 };
