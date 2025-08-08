@@ -1,9 +1,23 @@
 #include "hopfield.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <random>
 
-Hopfield::Hopfield(const sf::Image& image1, const sf::Image& image2)
-    : image1_(image1), image2_(image2) {}
+void Hopfield::loadImage(const std::string& filename) {
+  sf::Image image;
+  sf::Texture texture;
+  sf::Sprite sprite;
+
+  if (!image.loadFromFile(filename)) {
+    throw std::runtime_error{"Error during image charging"};
+  }
+
+  if (!texture.loadFromFile(filename)) {
+    throw std::runtime_error{"Error during texture charging"};
+  }
+
+  sprite.setTexture(texture);
+}
 
 auto Hopfield::resizeimage(const sf::Image& image) {
   std::vector<Pixel> p;
@@ -78,7 +92,43 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   return pattern;
 }
 
-// auto Hopfield::blackandwhite(const auto& pattern){return }
+sf::Image Hopfield::blackandwhite(const std::vector<int>& pattern) {
+  sf::Image image;
+  image.create(width_, height_, sf::Color::Black);
+
+  for (unsigned int i = 0; i < pattern.size(); ++i) {
+    unsigned int row{i / width_};
+    unsigned int col{i % width_};
+
+    if (pattern[i] == 1) {
+      image.setPixel(col, row, sf::Color::White);
+    }
+  }
+
+  sf::Texture texture;
+  texture.loadFromImage(image);
+  sf::Sprite sprite;
+  sprite.setTexture(texture);
+
+  return image;
+}
+
+std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
+  std::default_random_engine eng;
+  std::uniform_int_distribution<unsigned int> random_pix(0, N_ - 1);
+
+  std::vector<int> corr_pattern{pattern};
+
+  for (unsigned int i{0}; i < (N_ / 10); ++i) {
+    auto a{random_pix(eng)};
+    auto b{random_pix(eng)};
+
+    corr_pattern[a] = corr_pattern[b];
+    corr_pattern[b] = corr_pattern[a];
+  }
+
+  return corr_pattern;
+}
 
 // bisogna definire un bool per l'operatore==, inoltre al posto degli assert
 // si potrebbe fare un bool che controlla che pattern1.size == pattern2.size

@@ -149,9 +149,9 @@ int main() {
   for (unsigned int i{0}; i < (N / 10); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
-    pattern1[a] = pattern2[b];
-    pattern2[static_cast<unsigned int>(b)] =
-        pattern2[static_cast<unsigned int>(a)];
+    pattern1[a] = pattern1[b];
+    pattern1[static_cast<unsigned int>(b)] =
+        pattern1[static_cast<unsigned int>(a)];
   }
 
   sf::Image corrotta;
