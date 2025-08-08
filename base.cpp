@@ -2,8 +2,9 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <random>
 
-// #include "acquisition.cpp"
+// #include "Hopfield.hpp"
 
 int main() {
   struct Pixel {
@@ -11,11 +12,11 @@ int main() {
     unsigned int pg;
     unsigned int pb;
   };
-
   sf::Image image1;
   sf::Image image2;
   sf::Texture texture1;
   sf::Texture texture2;
+  // Hopfield acq(image1, image2);
 
   if (!image1.loadFromFile("pillars.jpg")) {
     std::cerr << "Errore nel caricamento dell'immagine" << '\n';
@@ -38,8 +39,8 @@ int main() {
   auto pillars{image1.getSize()};
   auto deep{image2.getSize()};
 
-  unsigned int width{150};
-  unsigned int height{200};
+  unsigned int width{200};
+  unsigned int height{300};
 
   double bx{static_cast<double>(width) / static_cast<double>(deep.x)};
   double by{static_cast<double>(height) / static_cast<double>(deep.y)};
@@ -108,7 +109,6 @@ int main() {
   assert(pattern1.size() == width * height);
   assert(pattern2.size() == width * height);
   assert(pattern1.size() == pattern2.size());
-
   std::cout << "Valori bianchi in pattern2: "
             << std::count(pattern2.begin(), pattern2.end(), 1) << '\n';
 
@@ -121,45 +121,73 @@ int main() {
   sf::Sprite sprite2;
   sprite2.setTexture(texture2);
 
-  //  sf::Image resizedimage1;
-  //  resizedimage1.create(width, height, sf::Color::Black);
-  //
-  //  for (unsigned int i = 0; i < pattern1.size(); ++i) {
-  //    unsigned int row{i / width};
-  //    unsigned int col{i % width};
-  //
-  //    if (pattern1[i] == 1) {
-  //      resizedimage1.setPixel(col, row, sf::Color::White);
-  //    }
-  //  }
-  //
-  //  sf::Texture resizedtexture1;
-  //  resizedtexture1.loadFromImage(resizedimage1);
-  //  sf::Sprite resizedsprite1;
-  //  resizedsprite1.setTexture(resizedtexture1);
+  sf::Image resizedimage1;
+  resizedimage1.create(width, height, sf::Color::Black);
 
-  //  Acquisition acquisition(image1, image2);
-  //
-  //  unsigned int width = acquisition.getWidth();
-  //  unsigned int height = acquisition.getHeight();
+  for (unsigned int i = 0; i < pattern1.size(); ++i) {
+    unsigned int row{i / width};
+    unsigned int col{i % width};
 
-  sf::Image resizedimage2;
-  resizedimage2.create(width, height, sf::Color::Black);
+    if (pattern1[i] == 1) {
+      resizedimage1.setPixel(col, row, sf::Color::White);
+    }
+  }
+
+  sf::Texture resizedtexture1;
+  resizedtexture1.loadFromImage(resizedimage1);
+  sf::Sprite resizedsprite1;
+  resizedsprite1.setTexture(resizedtexture1);
+  // Hopfield Hopfield(image1, image2);
+  //
+  // unsigned int width = Hopfield.getWidth();
+  // unsigned int height = Hopfield.getHeight();
+
+  unsigned int N{width * height};
+  // std::random_device r;
+  std::default_random_engine eng;
+  std::uniform_int_distribution<unsigned int> random_pix(0, N - 1);
+  for (unsigned int i{0}; i < (N / 10); ++i) {
+    auto a{random_pix(eng)};
+    auto b{random_pix(eng)};
+    pattern1[a] = pattern2[b];
+    pattern2[static_cast<unsigned int>(b)] =
+        pattern2[static_cast<unsigned int>(a)];
+  }
+
+  sf::Image corrotta;
+  corrotta.create(width, height, sf::Color::Black);
 
   for (unsigned int i = 0; i < pattern2.size(); ++i) {
     unsigned int row{i / width};
     unsigned int col{i % width};
 
     if (pattern2[i] == 1) {
-      resizedimage2.setPixel(col, row, sf::Color::White);
+      corrotta.setPixel(col, row, sf::Color::White);
     }
   }
 
-  sf::Texture resizedtexture2;
-  resizedtexture2.loadFromImage(resizedimage2);
-  sf::Sprite resizedsprite2;
-  resizedsprite2.setTexture(resizedtexture2);
+  sf::Texture corrottatexture;
+  corrottatexture.loadFromImage(corrotta);
+  sf::Sprite corrottasprite;
+  corrottasprite.setTexture(corrottatexture);
 
+  // sf::Image resizedimage2;
+  // resizedimage2.create(width, height, sf::Color::Black);
+  //
+  //  //for (unsigned int i = 0; i < pattern2.size(); ++i) {
+  //  //  unsigned int row{i / width};
+  //  //  unsigned int col{i % width};
+  //
+  //  //  if (pattern2[i] == 1) {
+  //  //    resizedimage2.setPixel(col, row, sf::Color::White);
+  //  //  }
+  //  //}
+  //
+  //  //sf::Texture resizedtexture2;
+  //  //resizedtexture2.loadFromImage(resizedimage2);
+  //  //sf::Sprite resizedsprite2;
+  //  //resizedsprite2.setTexture(resizedtexture2);
+  //
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -169,7 +197,8 @@ int main() {
     }
 
     window.clear();
-    window.draw(resizedsprite2);
+
+    window.draw(corrottasprite);
     window.display();
   }
 
@@ -233,25 +262,26 @@ int main() {
   //  file.close();
 
   // terzo tentativo
-  unsigned int N = width * height;
-
-  std::ofstream file("weight.txt");
-  if (!file.is_open()) {
-    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
-  }
-
-  for (unsigned int i = 0; i < N; ++i) {
-    for (unsigned int j = 0; j < N; ++j) {
-      if (i == j) {
-        file << 0 << " ";
-      } else {
-        double val = (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j]) /
-                     static_cast<double>(N);
-        file << val << " ";
-      }
-    }
-    file << '\n';
-  }
-
-  file.close();
+  //  unsigned int N = width * height;
+  //
+  //  std::ofstream file("weight.txt");
+  //  if (!file.is_open()) {
+  //    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  //  }
+  //
+  //  for (unsigned int i = 0; i < N; ++i) {
+  //    for (unsigned int j = 0; j < N; ++j) {
+  //      if (i == j) {
+  //        file << 0 << " ";
+  //      } else {
+  //        double val = (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j])
+  //        /
+  //                     static_cast<double>(N);
+  //        file << val << " ";
+  //      }
+  //    }
+  //    file << '\n';
+  //  }
+  //
+  //  file.close();
 };
