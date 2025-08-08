@@ -165,33 +165,89 @@ int main() {
     window.draw(resizedsprite2);
     window.display();
   }
+// primo tentativo 
+  //  unsigned int N{width * height};
+  //  std::vector<std::vector<int>> W(N, std::vector<int>(N));
+  //
+  //  for (unsigned int i{0}; i < N; ++i) {
+  //    for (unsigned int j{0}; j < N; ++j) {
+  //      if (i == j) {
+  //        W[i][j] = 0;
+  //      } else {
+  //        double sum{(static_cast<double>(pattern1[i] * pattern1[j] +
+  //                                        pattern2[i] * pattern2[j])) /
+  //                   static_cast<double>(N)};
+  //        W[i][j] = static_cast<int>(sum);
+  //      }
+  //    }
+  //  }
+  //  std::ofstream file("/home/aalessia/programmazione/finale/weight.txt");
+  //  if (!file.is_open()) {
+  //    throw std::runtime_error{"Impossible to open file!"};
+  //  }
+  //  for (const auto& r : W) {
+  //    for (const auto& val : r) {
+  //      file << val << " ";
+  //    }
+  //    file << '\n';
+  //  }
+  //
+  //  file.close();
+  //
+// secondo tentativo  
+  //  unsigned int N{width * height};
+  //  std::vector<std::vector<double>> W(N, std::vector<double>(N, 0.));
+  //  for (unsigned int i{0}; i < N; ++i) {
+  //    for (unsigned int j{0}; j < N; ++j) {
+  //      if (i != j) {
+  //        W[i][j] = (1.0 / N) * (static_cast<double>(pattern1[i] * pattern1[j]
+  //        +
+  //                                                   pattern2[i] *
+  //                                                   pattern2[j]));
+  //      } else {
+  //        W[i][j] = 0.;
+  //      }
+  //    }
+  //  }
+  //
+  //  std::ofstream file("weight.txt");
+  //  if (!file.is_open()) {
+  //    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  //  }
+  //
+  //  for (unsigned int i = 0; i < N; ++i) {
+  //    for (unsigned int j = 0; j < N; ++j) {
+  //      file << W[i][j] << " ";
+  //    }
+  //    file << '\n';
+  //  }
+  //
+  //  file.close();
 
-  unsigned int N{width * height};
-  std::vector<std::vector<int>> W(N, std::vector<int>(N));
-
-  for (unsigned int i{0}; i < N; ++i) {
-    for (unsigned int j{0}; j < N; ++j) {
-      if (i == j) {
-        W[i][j] = 0;
-      } else {
-        double sum{(static_cast<double>(pattern1[i] * pattern1[j] +
-                                        pattern2[i] * pattern2[j])) /
-                   static_cast<double>(N)};
-        W[i][j] = static_cast<int>(sum);
-      }
-    }
-  }
-
-  std::ofstream file("weight.txt");
-  if (!file.is_open()) {
-    throw std::runtime_error{"Impossible to open file!"};
-  }
-  for (const auto& r : W) {
-    for (const auto& val : r) {
-      file << val << " ";
-    }
-    file << '\n';
-  }
-
-  file.close();
+  
+  //terzo tentativo
+  //  unsigned int N = width * height;
+  //
+  //  std::ofstream file("weight.txt");
+  //  if (!file.is_open()) {
+  //    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  //  }
+  //
+  //  for (unsigned int i = 0; i < N; ++i) {
+  //    for (unsigned int j = 0; j < N; ++j) {
+  //      if (i == j) {
+  //        file << 0 << " ";
+  //      } else {
+  //        int val = static_cast<int>(
+  //            (pattern1[i] * pattern1[j] + pattern2[i] * pattern2[j]) /
+  //            static_cast<double>(N));
+  //        file << val << " ";
+  //      }
+  //    }
+  //    file << '\n';
+  //  }
+  //
+  //  file.close();
+  //
+  
 };
