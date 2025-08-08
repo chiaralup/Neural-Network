@@ -25,10 +25,13 @@ class Acquisition {
   std::vector<int> pattern2_{};
 
  public:
-  Acquisition(const sf::Image& image1, const sf::Image& image2);
+  Acquisition(const sf::Image& im1, const sf::Image& im2);
   void resizedimage();
   void pixel1();
   void pixel2();
+
+  // unsigned int getWidth() const { return width; }
+  // unsigned int getHeight() const { return height; }
 };
 
 #endif
