@@ -70,7 +70,7 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   auto p{resizeimage(image)};
   for (unsigned int r{0}; r < height_; ++r) {
     for (unsigned int c{0}; c < width_; ++c) {
-      unsigned int index = r * width_ + c;
+      int index = r * width_ + c;
       assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
 
       Pixel& pix = p[index];

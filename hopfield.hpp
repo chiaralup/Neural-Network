@@ -42,8 +42,8 @@ class Hopfield {
   Display display(const std::string& filename);
   auto matrix();
 
-  // unsigned int getWidth() const { return width; }
-  // unsigned int getHeight() const { return height; }
+  // intgetWidth() const { return width; }
+  // intgetHeight() const { return height; }
 };
 
 #endif
