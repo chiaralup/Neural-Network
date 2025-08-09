@@ -25,18 +25,17 @@ int main() {
         }
       }
 
-      Drawable image{hop.loadImage(filename)};
-      image.sprite.setPosition(0., 0.);
+      Drawable image{hop.loadSprite(filename)};
+      image.sprite.setPosition(25., 250.);
 
-      std::vector<int> pattern{hop.pattern(image.image)};
-      Drawable blackandwhite{hop.blackandwhite(pattern)};
-      blackandwhite.sprite.setPosition(400., 0.);
-      //
-      // Drawable corrupted{hop.blackandwhite(hop.corruption(pattern))};
-      // corrupted.sprite.setPosition(800., 0.);
+      Drawable blackandwhite{hop.blackandwhite(image.image)};
+      blackandwhite.sprite.setPosition(650., 250.);
+
+      // Drawable corrupted{hop.corruption(image.image)};
+      // corrupted.sprite.setPosition(1150., 250.);
 
       window.clear();
-      // window.draw(image.sprite);
+      window.draw(image.sprite);
       window.draw(blackandwhite.sprite);
       // window.draw(corrupted.sprite);
       window.display();
