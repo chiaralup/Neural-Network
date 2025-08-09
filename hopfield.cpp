@@ -165,7 +165,7 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 // return display;}
 
 Matrix Hopfield::matrix() {
-  std::ofstream file("weight.txt");
+  std::ofstream file("weights2.txt");
   if (!file.is_open()) {
     throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
   }
@@ -175,7 +175,7 @@ Matrix Hopfield::matrix() {
   for (unsigned int i{0}; i < N_; ++i) {
     for (unsigned int j{0}; j < N_; ++j) {
       if (i == j) {
-        W[i][j] = 0;
+        W[i][j] = 0.;
       } else {
         double sum =
             std::accumulate(patterns.begin(), patterns.end(), 0.,

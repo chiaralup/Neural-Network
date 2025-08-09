@@ -27,8 +27,8 @@ struct Display {
 
 class Hopfield {
  private:
-  unsigned int width_{300};
-  unsigned int height_{350};
+  unsigned int width_{50};
+  unsigned int height_{60};
   unsigned int N_{width_ * height_};
 
   std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
