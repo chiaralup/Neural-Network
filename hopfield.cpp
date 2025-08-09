@@ -211,7 +211,9 @@ bool Hopfield::update(std::vector<int>& corr_pattern) {
     for (unsigned int i{0}; i < N_; ++i) {
       double sum{0.};
       for (unsigned int j{0}; j < N_; ++j) {
-        sum += (W[i][j] * new_pattern[j]);
+        double Wij{0.};
+        file >> Wij;
+        sum += (Wij* new_pattern[j]);
       }
       new_pattern[i] = (sum < 0) ? -1 : 1;
       updating.push_back(new_pattern);
@@ -219,6 +221,7 @@ bool Hopfield::update(std::vector<int>& corr_pattern) {
     }
     return false;
   }
+  file.close();
   return true;
 }
 
