@@ -16,6 +16,28 @@ int main() {
     std::string filename;
     std::cin >> filename;
 
+    // Display dis{hop.screen(filename)};
+
+    // sf::Sprite initial{dis.initial.sprite};
+    // sf::Sprite blackandwhite{dis.blackandwhite.sprite};
+    // sf::Sprite corrupted{dis.corrupted.sprite};
+
+    //Matrix m{hop.matrix()};
+
+    Drawable initial{hop.loadSprite(filename)};
+    initial.sprite.setPosition(25., 250.);
+
+    std::vector<int> baw_pattern{hop.pattern(initial.image)};
+    Drawable blackandwhite{hop.blackandwhite(baw_pattern)};
+    blackandwhite.sprite.setPosition(650., 250.);
+
+    std::vector<int> corr_pattern{hop.corruption(baw_pattern)};
+    Drawable corrupted{hop.blackandwhite(corr_pattern)};
+    corrupted.sprite.setPosition(1150., 250.);
+
+    Drawable updated{corrupted};
+    updated.sprite.setPosition(0., 0.);
+
     while (window.isOpen()) {
       sf::Event event;
 
@@ -25,19 +47,30 @@ int main() {
         }
       }
 
-      Display display{hop.display(filename)};
+      // hop.update(corr_pattern, m);
 
       window.clear();
-      window.draw(display.initial.sprite);
-      window.draw(display.blackandwhite.sprite);
-      window.draw(display.corrupted.sprite);
+      // window.draw(initial);
+      // window.draw(blackandwhite);
+      // window.draw(corrupted);
+
+      // window.draw(initial.sprite);
+      // window.draw(blackandwhite.sprite);
+      // window.draw(corrupted.sprite);
+
+      //while (hop.update(corr_pattern, m) == false) {
+        window.draw(updated.sprite);
+      //}
       window.display();
     }
 
-    Display display{hop.display(filename)};
-    auto pattern{hop.pattern(display.blackandwhite.image)};
-    std::cout << "Valori bianchi in pattern2: "
-              << std::count(pattern.begin(), pattern.end(), 1) << '\n';
+    // std::cout << "Valori bianchi in pattern2: "
+    //           << std::count(upd_pattern.begin(), upd_pattern.end(), 1) <<
+    //           '\n';
+    // Display display{hop.display(filename)};
+    // auto pattern{hop.pattern(display.blackandwhite.image)};
+    // std::cout << "Valori bianchi in pattern2: "
+    //           << std::count(pattern.begin(), pattern.end(), 1) << '\n';
 
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << '\n';

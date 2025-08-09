@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 
+using Matrix = std::vector<std::vector<double>>;
+
 struct Pixel {
   unsigned int pr;
   unsigned int pg;
@@ -25,8 +27,8 @@ struct Display {
 
 class Hopfield {
  private:
-  unsigned int width_{400};
-  unsigned int height_{500};
+  unsigned int width_{300};
+  unsigned int height_{350};
   unsigned int N_{width_ * height_};
 
   std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
@@ -39,8 +41,9 @@ class Hopfield {
   Drawable blackandwhite(const std::vector<int>& image);
   std::vector<int> corruption(const std::vector<int>& pattern);
   auto loadPatterns();
-  Display display(const std::string& filename);
-  auto matrix();
+  Display screen(const std::string& filename);
+  Matrix matrix();
+  bool update(std::vector<int>& corr_pattern, const Matrix& W);
 
   // intgetWidth() const { return width; }
   // intgetHeight() const { return height; }

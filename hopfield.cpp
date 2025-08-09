@@ -70,7 +70,7 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   auto p{resizeimage(image)};
   for (unsigned int r{0}; r < height_; ++r) {
     for (unsigned int c{0}; c < width_; ++c) {
-      int index = r * width_ + c;
+      unsigned int index = r * width_ + c;
       assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
 
       Pixel& pix = p[index];
@@ -116,38 +116,61 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 
   std::vector<int> corr_pattern{pattern};
 
+  // modificare
+
   for (unsigned int i{0}; i < (N_ / 2); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
+    int val{corr_pattern[a]};
     corr_pattern[a] = corr_pattern[b];
-    corr_pattern[b] = corr_pattern[a];
+    corr_pattern[b] = val;
   }
 
   return corr_pattern;
 }
 
-Display Hopfield::display(const std::string& filename) {
-  Drawable initial{Hopfield::loadSprite(filename)};
-  initial.sprite.setPosition(25., 250.);
+// Display Hopfield::screen(const std::string& filename) {
+//   //  Display display;
+//   Drawable initial{loadSprite(filename)};
+//   initial.sprite.setPosition(25., 250.);
+//
+//   std::vector<int> baw_pattern{pattern(initial.image)};
+//   Drawable baw{blackandwhite(baw_pattern)};
+//   baw.sprite.setPosition(650., 250.);
+//
+//   // std::vector<int> corr_pattern{corruption(baw_pattern)};
+//   Drawable corrupted{blackandwhite(corruption(baw_pattern))};
+//   corrupted.sprite.setPosition(1150., 250.);
+//
+//   Display display = {initial, baw, corrupted};
+//
+//   return display;
 
-  Drawable blackandwhite;
-  std::vector<int> baw_pattern{Hopfield::pattern(initial.image)};
-  blackandwhite = Hopfield::blackandwhite(baw_pattern);
-  blackandwhite.sprite.setPosition(650., 250.);
+// Drawable initial{Hopfield::loadSprite(filename)};
+// initial.sprite.setPosition(25., 250.);
+//
+// Drawable blackandwhite;
+// std::vector<int> baw_pattern{Hopfield::pattern(initial.image)};
+// blackandwhite = Hopfield::blackandwhite(baw_pattern);
+// blackandwhite.sprite.setPosition(650., 250.);
+//
+// Drawable corrupted;
+// // std::vector<int> corr_pattern{corruption(baw_pattern)};
+// corrupted = Hopfield::blackandwhite(Hopfield::corruption(baw_pattern));
+// corrupted.sprite.setPosition(1150., 250.);
+//
+// Display display = {initial, blackandwhite, corrupted};
+//
+// return display;}
 
-  Drawable corrupted;
-  // std::vector<int> corr_pattern{corruption(baw_pattern)};
-  corrupted = Hopfield::blackandwhite(Hopfield::corruption(baw_pattern));
-  corrupted.sprite.setPosition(1150., 250.);
+Matrix Hopfield::matrix() {
+  std::ofstream file("weight.txt");
+  if (!file.is_open()) {
+    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  }
 
-  Display display = {initial, blackandwhite, corrupted};
-
-  return display;
-}
-
-auto Hopfield::matrix() {
-  std::vector<std::vector<double>> W;
+  Matrix W(N_, std::vector<double>(N_, 0.));
   auto patterns{loadPatterns()};
   for (unsigned int i{0}; i < N_; ++i) {
     for (unsigned int j{0}; j < N_; ++j) {
@@ -161,8 +184,36 @@ auto Hopfield::matrix() {
                             });
         W[i][j] = sum / static_cast<double>(N_);
       }
+      file << W[i][j] << " ";
     }
+    file << '\n';
   }
+  file.close();
+  return W;
+}
+
+bool Hopfield::update(std::vector<int>& corr_pattern, const Matrix& W) {
+  std::vector<int> new_pattern{corr_pattern};
+  std::vector<int> empty_vector;
+  std::vector<std::vector<int>> updating{empty_vector, corr_pattern};
+
+  size_t t{0};
+  while (updating[t] != updating[t + 1]) {
+    if (updating.size() != t + 2) {
+      throw std::runtime_error{"Incorrect size of the vector updating"};
+    }  // chat dice che non va qui:RICONTROLLARE BENE
+    for (unsigned int i{0}; i < N_; ++i) {
+      double sum{0.};
+      for (unsigned int j{0}; j < N_; ++j) {
+        sum += (W[i][j] * new_pattern[j]);
+      }
+      new_pattern[i] = (sum < 0) ? -1 : 1;
+      updating.push_back(new_pattern);
+      ++t;
+    }
+    return false;
+  }
+  return true;
 }
 
 //  bisogna definire un bool per l'operatore==, inoltre al posto degli assert
