@@ -33,6 +33,12 @@ int main() {
       window.draw(display.corrupted.sprite);
       window.display();
     }
+
+    Display display{hop.display(filename)};
+    auto pattern{hop.pattern(display.blackandwhite.image)};
+    std::cout << "Valori bianchi in pattern2: "
+              << std::count(pattern.begin(), pattern.end(), 1) << '\n';
+
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << '\n';
     return EXIT_FAILURE;

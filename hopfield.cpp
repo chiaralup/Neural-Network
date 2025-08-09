@@ -65,21 +65,6 @@ std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
   return p;
 }
 
-auto Hopfield::pattern1(const sf::Image& image) {  // NON SERVE
-  std::vector<int> pattern1;
-
-  for (unsigned int r{0}; r < height_; ++r) {
-    for (unsigned int c{0}; c < width_; ++c) {
-      sf::Color pix = image.getPixel(c, r);
-      double m{(pix.r + pix.g + pix.b) / 3.0};
-
-      pattern1.push_back(m < 127 ? -1 : 1);
-    }
-  }
-
-  return pattern1;
-}
-
 std::vector<int> Hopfield::pattern(const sf::Image& image) {
   std::vector<int> pattern;
   auto p{resizeimage(image)};
@@ -146,16 +131,19 @@ Display Hopfield::display(const std::string& filename) {
   Drawable initial{Hopfield::loadSprite(filename)};
   initial.sprite.setPosition(25., 250.);
 
-  Drawable blackandwhite{Hopfield::blackandwhite(initial.image)};
+  Drawable blackandwhite;
+  std::vector<int> baw_pattern{Hopfield::pattern(initial.image)};
+  blackandwhite = Hopfield::blackandwhite(baw_pattern);
   blackandwhite.sprite.setPosition(650., 250.);
 
   Drawable corrupted;
-  std::vector<int> pattern{Hopfield::pattern(blackandwhite.image)};
-  std::vector<int> corr_pattern{Hopfield::corruption(pattern)};
-  corrupted = Hopfield::blackandwhite
+  // std::vector<int> corr_pattern{corruption(baw_pattern)};
+  corrupted = Hopfield::blackandwhite(Hopfield::corruption(baw_pattern));
   corrupted.sprite.setPosition(1150., 250.);
 
-  return {initial, blackandwhite, corrupted};
+  Display display = {initial, blackandwhite, corrupted};
+
+  return display;
 }
 
 auto Hopfield::matrix() {

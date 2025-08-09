@@ -35,13 +35,12 @@ class Hopfield {
   sf::Image loadImage(const std::string& filename);
   Drawable loadSprite(const std::string& filename);
   std::vector<Pixel> resizeimage(const sf::Image& image);
-  auto pattern1(const sf::Image& image);  // FORSE NON SERVE
   std::vector<int> pattern(const sf::Image& image);
   Drawable blackandwhite(const std::vector<int>& image);
   std::vector<int> corruption(const std::vector<int>& pattern);
   auto loadPatterns();
-  auto matrix();
   Display display(const std::string& filename);
+  auto matrix();
 
   // unsigned int getWidth() const { return width; }
   // unsigned int getHeight() const { return height; }
