@@ -18,21 +18,21 @@ int main() {
   sf::Texture texture2;
   // Hopfield acq(image1, image2);
 
-  if (!image1.loadFromFile("pillars.jpg")) {
+  if (!image1.loadFromFile("Pillars.jpg")) {
     std::cerr << "Errore nel caricamento dell'immagine" << '\n';
     return -1;
   }
 
-  if (!image2.loadFromFile("orecchino.png")) {
+  if (!image2.loadFromFile("Earring.png")) {
     std::cerr << "Errore nel caricamento dell'immagine" << '\n';
     return -1;
   }
 
-  if (!texture1.loadFromFile("pillars.jpg")) {
+  if (!texture1.loadFromFile("Pillars.jpg")) {
     return -1;
   }
 
-  if (!texture2.loadFromFile("orecchino.png")) {
+  if (!texture2.loadFromFile("Earring.png")) {
     return -1;
   }
 

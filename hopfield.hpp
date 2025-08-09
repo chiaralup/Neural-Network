@@ -11,20 +11,31 @@ struct Pixel {
   unsigned int pb;
 };
 
+struct Drawable {
+  sf::Image image;
+  sf::Texture texture;
+  sf::Sprite sprite;
+};
+
 class Hopfield {
  private:
   unsigned int width_{150};
   unsigned int height_{200};
-  unsigned int N_{width_*height_};
+  unsigned int N_{width_ * height_};
+
+  //sf::Texture texture_;
+  //sf::Sprite sprite_;
+  //std::vector<sf::Texture> texture_;
+  //std::vector<sf::Sprite> sprite_;
 
  public:
   Hopfield() {
   }  // Costruttore un po' inutile(?). Che variabili dovrebbe avere??
-  void loadImage(const std::string& filename);
+  Drawable loadImage(const std::string& filename);
   auto resizeimage(const sf::Image& image);
   auto pattern1(const sf::Image& image);  // FORSE NON SERVE
   std::vector<int> pattern(const sf::Image& image);
-  sf::Image blackandwhite(const std::vector<int>& pattern);
+  Drawable blackandwhite(const std::vector<int>& pattern);
   std::vector<int> corruption(const std::vector<int>& pattern);
 
   // unsigned int getWidth() const { return width; }

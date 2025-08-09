@@ -3,20 +3,21 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 
-void Hopfield::loadImage(const std::string& filename) {
-  sf::Image image;
-  sf::Texture texture;
-  sf::Sprite sprite;
+Drawable Hopfield::loadImage(const std::string& filename) {
+  Drawable drawable;
 
-  if (!image.loadFromFile(filename)) {
+  if (!drawable.image.loadFromFile(filename)) {
     throw std::runtime_error{"Error during image charging"};
   }
 
-  if (!texture.loadFromFile(filename)) {
+  if (!drawable.texture.loadFromFile(filename)) {
     throw std::runtime_error{"Error during texture charging"};
   }
 
-  sprite.setTexture(texture);
+
+ drawable.sprite.setTexture(drawable.texture);
+  
+ return drawable;
 }
 
 auto Hopfield::resizeimage(const sf::Image& image) {
@@ -92,25 +93,23 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   return pattern;
 }
 
-sf::Image Hopfield::blackandwhite(const std::vector<int>& pattern) {
-  sf::Image image;
-  image.create(width_, height_, sf::Color::Black);
+Drawable Hopfield::blackandwhite(const std::vector<int>& pattern) {
+  Drawable drawable;
+  drawable.image.create(width_, height_, sf::Color::Black);
 
   for (unsigned int i = 0; i < pattern.size(); ++i) {
     unsigned int row{i / width_};
     unsigned int col{i % width_};
 
     if (pattern[i] == 1) {
-      image.setPixel(col, row, sf::Color::White);
+      drawable.image.setPixel(col, row, sf::Color::White);
     }
   }
 
-  sf::Texture texture;
-  texture.loadFromImage(image);
-  sf::Sprite sprite;
-  sprite.setTexture(texture);
+  drawable.texture.loadFromImage(drawable.image);
+  drawable.sprite.setTexture(drawable.texture);
 
-  return image;
+  return drawable;
 }
 
 std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
