@@ -165,10 +165,10 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 // return display;}
 
 Matrix Hopfield::matrix() {
-  std::ofstream file("weights2.txt");
-  if (!file.is_open()) {
-    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
-  }
+  // std::ofstream file("weights.txt");
+  // if (!file.is_open()) {
+  //   throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  // }
 
   Matrix W(N_, std::vector<double>(N_, 0.));
   auto patterns{loadPatterns()};
@@ -184,18 +184,24 @@ Matrix Hopfield::matrix() {
                             });
         W[i][j] = sum / static_cast<double>(N_);
       }
-      file << W[i][j] << " ";
+      // file << W[i][j] << " ";
     }
-    file << '\n';
+    // file << '\n';
   }
-  file.close();
+  // file.close();
   return W;
 }
 
-bool Hopfield::update(std::vector<int>& corr_pattern, const Matrix& W) {
+bool Hopfield::update(std::vector<int>& corr_pattern) {
   std::vector<int> new_pattern{corr_pattern};
   std::vector<int> empty_vector;
   std::vector<std::vector<int>> updating{empty_vector, corr_pattern};
+
+  std::ifstream file{"../weights.txt"};
+
+  if (!file) {
+    throw std::runtime_error{"Impossible to open file!"};
+  }
 
   size_t t{0};
   while (updating[t] != updating[t + 1]) {

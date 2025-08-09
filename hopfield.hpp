@@ -27,8 +27,8 @@ struct Display {
 
 class Hopfield {
  private:
-  unsigned int width_{50};
-  unsigned int height_{60};
+  unsigned int width_{45};
+  unsigned int height_{55};
   unsigned int N_{width_ * height_};
 
   std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
@@ -43,7 +43,7 @@ class Hopfield {
   auto loadPatterns();
   Display screen(const std::string& filename);
   Matrix matrix();
-  bool update(std::vector<int>& corr_pattern, const Matrix& W);
+  bool update(std::vector<int>& corr_pattern);
 
   // intgetWidth() const { return width; }
   // intgetHeight() const { return height; }

@@ -13,7 +13,7 @@ int main() {
     Hopfield hop;
 
     // std::cout << "Choose an image: Pillars.jpg or Earring.png" << '\n';
-    // std::string filename{"Pillars.jpg"};
+    std::string filename{"Pillars.jpg"};
     // std::cin >> filename;
 
     hop.matrix();
