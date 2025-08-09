@@ -14,7 +14,8 @@ sf::Image Hopfield::loadImage(const std::string& filename) {
 }
 
 Drawable Hopfield::loadSprite(const std::string& filename) {
-  Drawable drawable{Hopfield::loadImage(filename)};
+  Drawable drawable;
+  drawable.image = Hopfield::loadImage(filename);
 
   if (!drawable.texture.loadFromFile(filename)) {
     throw std::runtime_error{"Error during texture charging"};
@@ -25,7 +26,7 @@ Drawable Hopfield::loadSprite(const std::string& filename) {
   return drawable;
 }
 
-auto Hopfield::resizeimage(const sf::Image& image) {
+std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
   std::vector<Pixel> p;
   auto size{image.getSize()};
 
@@ -64,7 +65,7 @@ auto Hopfield::resizeimage(const sf::Image& image) {
   return p;
 }
 
-auto Hopfield::pattern1(const sf::Image& image) {  // NON SERVE FORSE
+auto Hopfield::pattern1(const sf::Image& image) {  // NON SERVE
   std::vector<int> pattern1;
 
   for (unsigned int r{0}; r < height_; ++r) {
@@ -73,7 +74,6 @@ auto Hopfield::pattern1(const sf::Image& image) {  // NON SERVE FORSE
       double m{(pix.r + pix.g + pix.b) / 3.0};
 
       pattern1.push_back(m < 127 ? -1 : 1);
-      // l'ho cambiato in operatore ternario, invece che ciclo if
     }
   }
 
@@ -97,11 +97,18 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   return pattern;
 }
 
-Drawable Hopfield::blackandwhite(const sf::Image& image) {
+auto Hopfield::loadPatterns() {
+  std::vector<std::vector<int>> patterns;
+  for (unsigned int i{0}; i < files_.size(); ++i) {
+    sf::Image image{loadImage(files_[i])};
+    patterns.push_back(pattern(image));
+  }
+  return patterns;
+}
+
+Drawable Hopfield::blackandwhite(const std::vector<int>& pattern) {
   Drawable drawable;
   drawable.image.create(width_, height_, sf::Color::Black);
-
-  std::vector<int> pattern{Hopfield::pattern(image)};
 
   for (unsigned int i{0}; i < pattern.size(); ++i) {
     unsigned int row{i / width_};
@@ -118,11 +125,10 @@ Drawable Hopfield::blackandwhite(const sf::Image& image) {
   return drawable;
 }
 
-std::vector<int> Hopfield::corruption(const sf::Image& image) {
+std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
   std::default_random_engine eng;
   std::uniform_int_distribution<unsigned int> random_pix(0, N_ - 1);
 
-  std::vector<int> pattern{Hopfield::pattern(blackandwhite(image).image)};
   std::vector<int> corr_pattern{pattern};
 
   for (unsigned int i{0}; i < (N_ / 2); ++i) {
@@ -136,13 +142,20 @@ std::vector<int> Hopfield::corruption(const sf::Image& image) {
   return corr_pattern;
 }
 
-auto Hopfield::loadPatterns() {
-  std::vector<std::vector<int>> patterns;
-  for (unsigned int i{0}; i < files_.size(); ++i) {
-    sf::Image image{loadImage(files_[i])};
-    patterns.push_back(pattern(image));
-  }
-  return patterns;
+Display Hopfield::display(const std::string& filename) {
+  Drawable initial{Hopfield::loadSprite(filename)};
+  initial.sprite.setPosition(25., 250.);
+
+  Drawable blackandwhite{Hopfield::blackandwhite(initial.image)};
+  blackandwhite.sprite.setPosition(650., 250.);
+
+  Drawable corrupted;
+  std::vector<int> pattern{Hopfield::pattern(blackandwhite.image)};
+  std::vector<int> corr_pattern{Hopfield::corruption(pattern)};
+  corrupted = Hopfield::blackandwhite
+  corrupted.sprite.setPosition(1150., 250.);
+
+  return {initial, blackandwhite, corrupted};
 }
 
 auto Hopfield::matrix() {
@@ -154,10 +167,9 @@ auto Hopfield::matrix() {
         W[i][j] = 0;
       } else {
         double sum =
-            std::accumulate(patterns.begin(), patterns.end(), 0.0,
+            std::accumulate(patterns.begin(), patterns.end(), 0.,
                             [i, j](double total, const std::vector<int>& p) {
-                              return total + static_cast<double>(p[i]) *
-                                                 static_cast<double>(p[j]);
+                              return total + static_cast<double>(p[i] * p[j]);
                             });
         W[i][j] = sum / static_cast<double>(N_);
       }

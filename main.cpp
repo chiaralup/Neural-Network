@@ -25,19 +25,12 @@ int main() {
         }
       }
 
-      Drawable image{hop.loadSprite(filename)};
-      image.sprite.setPosition(25., 250.);
-
-      Drawable blackandwhite{hop.blackandwhite(image.image)};
-      blackandwhite.sprite.setPosition(650., 250.);
-
-      // Drawable corrupted{hop.corruption(image.image)};
-      // corrupted.sprite.setPosition(1150., 250.);
+      Display display{hop.display(filename)};
 
       window.clear();
-      window.draw(image.sprite);
-      window.draw(blackandwhite.sprite);
-      // window.draw(corrupted.sprite);
+      window.draw(display.initial.sprite);
+      window.draw(display.blackandwhite.sprite);
+      window.draw(display.corrupted.sprite);
       window.display();
     }
   } catch (const std::exception& e) {
