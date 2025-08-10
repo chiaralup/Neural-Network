@@ -27,12 +27,12 @@ struct Display {
 
 class Hopfield {
  private:
-  unsigned int width_{45};
-  unsigned int height_{55};
+  unsigned int width_{42};
+  unsigned int height_{51};
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
-  std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
+  std::vector<std::string> files_{"Pillars.jpg", "Earring.png", };
 
  public:
   auto getN() const { return N_; }
@@ -48,6 +48,7 @@ class Hopfield {
   void getMatrix();
   void update(const std::vector<int>& corr_pattern);
   std::vector<int> up(const std::vector<int>& corr_pattern);
+  double energy(const std::vector<int>& state);
   // intgetWidth() const { return width; }
   // intgetHeight() const { return height; }
 };
