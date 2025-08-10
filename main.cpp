@@ -8,19 +8,18 @@
 
 int main() {
   try {
+    Hopfield hop;
     sf::RenderWindow window(sf::VideoMode(1600, 900), "Neural Network");
 
-    Hopfield hop;
-
     // std::cout << "Choose an image: Pillars.jpg or Earring.png" << '\n';
-    std::string filename{"Pillars.jpg"};
+    std::string filename{"Earring.png"};
     // std::cin >> filename;
 
     // hop.matrix();
 
-    // Display dis{hop.screen(filename)};
+    hop.getMatrix();
 
-    // Matrix m{hop.matrix()};
+    // Display dis{hop.screen(filename)};
 
     Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(25., 250.);
@@ -29,10 +28,13 @@ int main() {
     blackandwhite.sprite.setPosition(650., 250.);
     std::vector<int> corr_pattern{hop.corruption(baw_pattern)};
     Drawable corrupted{hop.blackandwhite(corr_pattern)};
+    corrupted.sprite.setScale(3.f, 3.f);
     corrupted.sprite.setPosition(1150., 250.);
-    std::vector<std::vector<int>> updating;
-    hop.update(corr_pattern, updating);
-    std::cout << "t = " << updating.size() << '\n';
+
+    std::vector<int> current_state{corr_pattern};
+    std::vector<int> next_state{current_state};
+    bool finished{false};
+    sf::Clock clock;
 
     while (window.isOpen()) {
       sf::Event event;
@@ -42,24 +44,30 @@ int main() {
         }
       }
 
-      window.clear();
-      auto updating{hop.update(corr_pattern)};
-      std::cout << "t = " << updating.size() << '\n';
-      for (const auto& pattern : updating) {
-        Drawable updated{hop.blackandwhite(pattern)};
-        updated.sprite.setScale(3.0f, 3.0f);
-        window.draw(updated.sprite);
+      if (!finished && clock.getElapsedTime().asMilliseconds() > 500) {
+        next_state = hop.up(current_state);
+        if (next_state == current_state) {
+          finished = true;
+        }
+        current_state = next_state;
+
+        clock.restart();
       }
+
+      window.clear();
+      window.draw(corrupted.sprite);
+
+      Drawable updated{hop.blackandwhite(current_state)};
+      updated.sprite.setScale(3.f, 3.f);
+      updated.sprite.setPosition(100., 100.);
+      window.draw(updated.sprite);
+      window.display();
 
       // window.draw(initial);
       // window.draw(blackandwhite);
       // window.draw(corrupted);
-    
       // window.draw(initial.sprite);
       // window.draw(blackandwhite.sprite);
-      // window.draw(corrupted.sprite);
-
-      window.display();
     }
     // std::cout << "Valori bianchi in pattern2: "
     //            << std::count(upd_pattern.begin(), upd_pattern.end(), 1) <<
@@ -68,7 +76,6 @@ int main() {
     //  auto pattern{hop.pattern(display.blackandwhite.image)};
     //  std::cout << "Valori bianchi in pattern2: "
     //            << std::count(pattern.begin(), pattern.end(), 1) << '\n';
-
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << '\n';
     return EXIT_FAILURE;

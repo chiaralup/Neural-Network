@@ -118,7 +118,7 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 
   // modificare
 
-  for (unsigned int i{0}; i < (N_ / 10); ++i) {
+  for (unsigned int i{0}; i < (N_ / 2); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
@@ -164,13 +164,13 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 //
 // return display;}
 
-Matrix Hopfield::matrix() {
-  // std::ofstream file("weights.txt");
-  // if (!file.is_open()) {
-  //   throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
-  // }
+void Hopfield::matrix() {  // L'ABBIAAMO USATA SOLO PER SCRIVERE SU FILE
+  std::ofstream file("weights.txt");
+  if (!file.is_open()) {
+    throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
+  }
 
-  Matrix W(N_, std::vector<double>(N_, 0.));
+  Matrix W(N_, std::vector<double>(N_, 0.));  // lasciamo così o W_?
   auto patterns{loadPatterns()};
   for (unsigned int i{0}; i < N_; ++i) {
     for (unsigned int j{0}; j < N_; ++j) {
@@ -184,82 +184,73 @@ Matrix Hopfield::matrix() {
                             });
         W[i][j] = sum / static_cast<double>(N_);
       }
-      // file << W[i][j] << " ";
+      file << W[i][j] << " ";
     }
-    // file << '\n';
+    file << '\n';
   }
-  // file.close();
-  return W;
+  file.close();
 }
 
-// void Hopfield::update(const std::vector<int>& corr_pattern) {
-//   std::vector<int> new_pattern{corr_pattern};
-//   std::vector<int> empty_vector;
-//   std::vector<std::vector<int>> updating{empty_vector, corr_pattern};
-//
-//   std::ifstream file{"../weights.txt"};
-//
-//   if (!file) {
-//     throw std::runtime_error{"Impossible to open file!"};
-//   }
-//
-//   size_t t{0};
-//   while (updating[t] != updating[t + 1]) {
-//     if (updating.size() != t + 2) {
-//       throw std::runtime_error{"Incorrect size of the vector updating"};
-//     }  // chat dice che non va qui:RICONTROLLARE BENE
-//     for (unsigned int i{0}; i < N_; ++i) {
-//       double sum{0.};
-//       for (unsigned int j{0}; j < N_; ++j) {
-//         double Wij{0.};
-//         file >> Wij;
-//         sum += (Wij * new_pattern[j]);
-//       }
-//       new_pattern[i] = (sum < 0) ? -1 : 1;
-//       updating.push_back(new_pattern);
-//       ++t;
-//     }
-//   }
-//   file.close();
-// }
-
-bool Hopfield::update(const std::vector<int>& corr_pattern,
-                      std::vector<std::vector<int>>& updating) {
-  std::vector<int> new_pattern{corr_pattern};
-  Matrix W{matrix()};
-
+void Hopfield::getMatrix() {
   std::ifstream file{"./weights.txt"};
   if (!file) {
     throw std::runtime_error{"Impossible to open file!"};
   }
+  for (unsigned int i{0}; i < N_; ++i) {
+    for (unsigned int j{0}; j < N_; ++j) {
+      double Wij{0.};
+      file >> Wij;
+      W_[i][j] = Wij;
+      if ((i == j) && (W_[i][j] != 0)) {
+        throw std::runtime_error{"W_[i][j] should be 0 when i == j"};
+      }
+      // if (i == j) {
+      //   std::cout << "Diag[" << i << "] = " << W_[i][j] << "\n";
+      // }
+    }
+  }
+  file.close();
+}
+
+// void Hopfield::update(const std::vector<int>& corr_pattern) {
+//   std::vector<int> old_pattern{corr_pattern};
+//   std::vector<int> new_pattern{corr_pattern};
+//
+//   while (true) {
+//     for (unsigned int i{0}; i < N_; ++i) {
+//       double sum{0.};
+//       for (unsigned int j{0}; j < N_; ++j) {
+//         sum += (W_[i][j] * old_pattern[j]);
+//       }
+//       new_pattern[i] = (sum < 0) ? -1 : 1;
+//     }
+//
+//     Drawable drawable{blackandwhite(new_pattern)};
+//     drawable.sprite.setScale(3.f, 3.f);
+//     window().draw(drawable.sprite);
+//     window().display();
+//
+//     if (new_pattern == old_pattern) {
+//       break;
+//     }
+//     sf::sleep(sf::milliseconds(100));
+//     old_pattern = new_pattern;
+//   }
+// }
+//
+
+std::vector<int> Hopfield::up(const std::vector<int>& corr_pattern) {
+  std::vector<int> new_pattern{corr_pattern};
 
   for (unsigned int i{0}; i < N_; ++i) {
     double sum{0.};
     for (unsigned int j{0}; j < N_; ++j) {
-      sum += (W[i][j] * corr_pattern[j]);
+      sum += (W_[i][j] * corr_pattern[j]);
     }
     new_pattern[i] = (sum < 0) ? -1 : 1;
   }
-  file.close();
-
-  updating.push_back(new_pattern);
-
-  if (new_pattern != corr_pattern) {
-    return true;
-  } else {
-    return false;
-  }
+  return new_pattern;
 }
-
-void Hopfield::convergence(const std::vector<int>& corr_pattern,
-                           std::vector<std::vector<int>>& updating) {
-  while (update(corr_pattern, updating) == true) {
-    continue; 
-  }
-}
-
-//  bisogna definire un bool per l'operatore==, inoltre al posto degli assert
-//  si potrebbe fare un bool che controlla che pattern1.size == pattern2.size
 
 //  assert(pattern1_.size() == width * height); //li mettiamo nel main?
 //  assert(pattern2_.size() == width * height); //li mettiamo nel main?

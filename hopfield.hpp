@@ -30,10 +30,12 @@ class Hopfield {
   unsigned int width_{45};
   unsigned int height_{55};
   unsigned int N_{width_ * height_};
+  Matrix W_{N_, std::vector<double>(N_, 0.)};
 
   std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
 
  public:
+  auto getN() const { return N_; }
   sf::Image loadImage(const std::string& filename);
   Drawable loadSprite(const std::string& filename);
   std::vector<Pixel> resizeimage(const sf::Image& image);
@@ -42,14 +44,12 @@ class Hopfield {
   std::vector<int> corruption(const std::vector<int>& pattern);
   auto loadPatterns();
   Display screen(const std::string& filename);
-  Matrix matrix();
-  bool update(const std::vector<int>& corr_pattern,
-              std::vector<std::vector<int>>& updating);
-  void convergence(const std::vector<int>& corr_pattern,
-                   std::vector<std::vector<int>>& updating);
-
-    // intgetWidth() const { return width; }
-    // intgetHeight() const { return height; }
-  };
+  void matrix();
+  void getMatrix();
+  void update(const std::vector<int>& corr_pattern);
+  std::vector<int> up(const std::vector<int>& corr_pattern);
+  // intgetWidth() const { return width; }
+  // intgetHeight() const { return height; }
+};
 
 #endif
