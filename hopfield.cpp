@@ -252,6 +252,18 @@ std::vector<int> Hopfield::up(const std::vector<int>& corr_pattern) {
   return new_pattern;
 }
 
+double Hopfield::energy(const std::vector<int>& state) {
+  double energy;
+  double sum{0.};
+  for (unsigned int i{0}; i < N_; ++i) {
+    for (unsigned int j{0}; j < N_; ++j) {
+      sum += (W_[i][j] * state[i] * state[j]);
+    }
+  }
+  energy = sum / (-2.);
+  return energy;
+}
+
 //  assert(pattern1_.size() == width * height); //li mettiamo nel main?
 //  assert(pattern2_.size() == width * height); //li mettiamo nel main?
 //  assert(pattern(image1).size() == pattern(image2).size());

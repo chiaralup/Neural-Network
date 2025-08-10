@@ -50,7 +50,7 @@ int main() {
           finished = true;
         }
         current_state = next_state;
-
+        std::cout << "Energy = " << hop.energy(current_state) << '\n';
         clock.restart();
       }
 
