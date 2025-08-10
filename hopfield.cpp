@@ -233,32 +233,30 @@ bool Hopfield::update(const std::vector<int>& corr_pattern,
     throw std::runtime_error{"Impossible to open file!"};
   }
 
-for (unsigned int i{0}; i < N_; ++i) {
-  double sum{0.};
-  for (unsigned int j{0}; j < N_; ++j) {
-    sum += (W[i][j] * corr_pattern[j]);
+  for (unsigned int i{0}; i < N_; ++i) {
+    double sum{0.};
+    for (unsigned int j{0}; j < N_; ++j) {
+      sum += (W[i][j] * corr_pattern[j]);
+    }
+    new_pattern[i] = (sum < 0) ? -1 : 1;
   }
-  new_pattern[i] = (sum < 0) ? -1 : 1;
-}
-file.close();
+  file.close();
 
-updating.push_back(new_pattern);
+  updating.push_back(new_pattern);
 
-if (new_pattern != corr_pattern) {
-  return true;
-} else {
-  return false;
-}
+  if (new_pattern != corr_pattern) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void Hopfield::convergence(const std::vector<int>& corr_pattern,
-                      std::vector<std::vector<int>>& updating) {
-while(update(corr_pattern, updating)==true){
-continue;
-}
-   
+                           std::vector<std::vector<int>>& updating) {
+  while (update(corr_pattern, updating) == true) {
+    continue; 
   }
-
+}
 
 //  bisogna definire un bool per l'operatore==, inoltre al posto degli assert
 //  si potrebbe fare un bool che controlla che pattern1.size == pattern2.size
