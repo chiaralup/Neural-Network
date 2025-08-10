@@ -30,9 +30,9 @@ int main() {
     std::vector<int> corr_pattern{hop.corruption(baw_pattern)};
     Drawable corrupted{hop.blackandwhite(corr_pattern)};
     corrupted.sprite.setPosition(1150., 250.);
-    Drawable updated{corrupted};
-    updated.sprite.setPosition(0., 0.);
-    updated.sprite.setScale(3.0f, 3.0f);
+    std::vector<std::vector<int>> updating;
+    hop.update(corr_pattern, updating);
+    std::cout << "t = " << updating.size() << '\n';
 
     while (window.isOpen()) {
       sf::Event event;
@@ -41,20 +41,24 @@ int main() {
           window.close();
         }
       }
-      //  // hop.update(corr_pattern, m);
-      //
+
       window.clear();
-      //  // window.draw(initial);
-      //  // window.draw(blackandwhite);
-      //  // window.draw(corrupted);
-      //
-      //  // window.draw(initial.sprite);
-      //  // window.draw(blackandwhite.sprite);
-      //  // window.draw(corrupted.sprite);
-      //
-      //  //while (hop.update(corr_pattern, m) == false) {
-      window.draw(updated.sprite);
-      //  //}
+      auto updating{hop.update(corr_pattern)};
+      std::cout << "t = " << updating.size() << '\n';
+      for (const auto& pattern : updating) {
+        Drawable updated{hop.blackandwhite(pattern)};
+        updated.sprite.setScale(3.0f, 3.0f);
+        window.draw(updated.sprite);
+      }
+
+      // window.draw(initial);
+      // window.draw(blackandwhite);
+      // window.draw(corrupted);
+    
+      // window.draw(initial.sprite);
+      // window.draw(blackandwhite.sprite);
+      // window.draw(corrupted.sprite);
+
       window.display();
     }
     // std::cout << "Valori bianchi in pattern2: "

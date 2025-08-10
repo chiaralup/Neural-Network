@@ -118,7 +118,7 @@ std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
 
   // modificare
 
-  for (unsigned int i{0}; i < (N_ / 2); ++i) {
+  for (unsigned int i{0}; i < (N_ / 10); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
@@ -192,38 +192,73 @@ Matrix Hopfield::matrix() {
   return W;
 }
 
-bool Hopfield::update(std::vector<int>& corr_pattern) {
+// void Hopfield::update(const std::vector<int>& corr_pattern) {
+//   std::vector<int> new_pattern{corr_pattern};
+//   std::vector<int> empty_vector;
+//   std::vector<std::vector<int>> updating{empty_vector, corr_pattern};
+//
+//   std::ifstream file{"../weights.txt"};
+//
+//   if (!file) {
+//     throw std::runtime_error{"Impossible to open file!"};
+//   }
+//
+//   size_t t{0};
+//   while (updating[t] != updating[t + 1]) {
+//     if (updating.size() != t + 2) {
+//       throw std::runtime_error{"Incorrect size of the vector updating"};
+//     }  // chat dice che non va qui:RICONTROLLARE BENE
+//     for (unsigned int i{0}; i < N_; ++i) {
+//       double sum{0.};
+//       for (unsigned int j{0}; j < N_; ++j) {
+//         double Wij{0.};
+//         file >> Wij;
+//         sum += (Wij * new_pattern[j]);
+//       }
+//       new_pattern[i] = (sum < 0) ? -1 : 1;
+//       updating.push_back(new_pattern);
+//       ++t;
+//     }
+//   }
+//   file.close();
+// }
+
+bool Hopfield::update(const std::vector<int>& corr_pattern,
+                      std::vector<std::vector<int>>& updating) {
   std::vector<int> new_pattern{corr_pattern};
-  std::vector<int> empty_vector;
-  std::vector<std::vector<int>> updating{empty_vector, corr_pattern};
+  Matrix W{matrix()};
 
-  std::ifstream file{"../weights.txt"};
-
+  std::ifstream file{"./weights.txt"};
   if (!file) {
     throw std::runtime_error{"Impossible to open file!"};
   }
 
-  size_t t{0};
-  while (updating[t] != updating[t + 1]) {
-    if (updating.size() != t + 2) {
-      throw std::runtime_error{"Incorrect size of the vector updating"};
-    }  // chat dice che non va qui:RICONTROLLARE BENE
-    for (unsigned int i{0}; i < N_; ++i) {
-      double sum{0.};
-      for (unsigned int j{0}; j < N_; ++j) {
-        double Wij{0.};
-        file >> Wij;
-        sum += (Wij* new_pattern[j]);
-      }
-      new_pattern[i] = (sum < 0) ? -1 : 1;
-      updating.push_back(new_pattern);
-      ++t;
-    }
-    return false;
+for (unsigned int i{0}; i < N_; ++i) {
+  double sum{0.};
+  for (unsigned int j{0}; j < N_; ++j) {
+    sum += (W[i][j] * corr_pattern[j]);
   }
-  file.close();
-  return true;
+  new_pattern[i] = (sum < 0) ? -1 : 1;
 }
+file.close();
+
+updating.push_back(new_pattern);
+
+if (new_pattern != corr_pattern) {
+  return true;
+} else {
+  return false;
+}
+}
+
+void Hopfield::convergence(const std::vector<int>& corr_pattern,
+                      std::vector<std::vector<int>>& updating) {
+while(update(corr_pattern, updating)==true){
+continue;
+}
+   
+  }
+
 
 //  bisogna definire un bool per l'operatore==, inoltre al posto degli assert
 //  si potrebbe fare un bool che controlla che pattern1.size == pattern2.size

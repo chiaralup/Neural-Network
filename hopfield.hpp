@@ -43,10 +43,13 @@ class Hopfield {
   auto loadPatterns();
   Display screen(const std::string& filename);
   Matrix matrix();
-  bool update(std::vector<int>& corr_pattern);
+  bool update(const std::vector<int>& corr_pattern,
+              std::vector<std::vector<int>>& updating);
+  void convergence(const std::vector<int>& corr_pattern,
+                   std::vector<std::vector<int>>& updating);
 
-  // intgetWidth() const { return width; }
-  // intgetHeight() const { return height; }
-};
+    // intgetWidth() const { return width; }
+    // intgetHeight() const { return height; }
+  };
 
 #endif
