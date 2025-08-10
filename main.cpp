@@ -8,9 +8,8 @@
 
 int main() {
   try {
-    sf::RenderWindow window(sf::VideoMode(1600, 900), "Neural Network");
-
     Hopfield hop;
+    sf::RenderWindow& window{hop.window()};
 
     // std::cout << "Choose an image: Pillars.jpg or Earring.png" << '\n';
     std::string filename{"Pillars.jpg"};
@@ -18,9 +17,9 @@ int main() {
 
     // hop.matrix();
 
-    // Display dis{hop.screen(filename)};
+    hop.getMatrix();
 
-    // Matrix m{hop.matrix()};
+    // Display dis{hop.screen(filename)};
 
     Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(25., 250.);
@@ -30,37 +29,38 @@ int main() {
     std::vector<int> corr_pattern{hop.corruption(baw_pattern)};
     Drawable corrupted{hop.blackandwhite(corr_pattern)};
     corrupted.sprite.setPosition(1150., 250.);
-    std::vector<std::vector<int>> updating;
-    hop.update(corr_pattern, updating);
-    std::cout << "t = " << updating.size() << '\n';
 
-    while (window.isOpen()) {
-      sf::Event event;
-      while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-          window.close();
-        }
-      }
+    // std::ifstream file{"./weights.txt"};
+    // if (!file) {
+    //   throw std::runtime_error{"Impossible to open file!"};
+    // }
+    //
+    //    for (int i{0}; i < 10; ++i) {
+    //      double Wij{0.};
+    //      file >> Wij;
+    //      std::cout << Wij << '\n';
+    //    }
+    //
 
-      window.clear();
-      auto updating{hop.update(corr_pattern)};
-      std::cout << "t = " << updating.size() << '\n';
-      for (const auto& pattern : updating) {
-        Drawable updated{hop.blackandwhite(pattern)};
-        updated.sprite.setScale(3.0f, 3.0f);
-        window.draw(updated.sprite);
-      }
+    // while (window.isOpen()) {
+    //   sf::Event event;
+    //   while (window.pollEvent(event)) {
+    //     if (event.type == sf::Event::Closed) {
+    //       window.close();
+    //     }
+    //   }
+    //
+    //  window.clear();
+    //  hop.update(corr_pattern);
 
-      // window.draw(initial);
-      // window.draw(blackandwhite);
-      // window.draw(corrupted);
-    
-      // window.draw(initial.sprite);
-      // window.draw(blackandwhite.sprite);
-      // window.draw(corrupted.sprite);
-
-      window.display();
-    }
+    // window.draw(initial);
+    // window.draw(blackandwhite);
+    // window.draw(corrupted);
+    // window.draw(initial.sprite);
+    //  window.draw(blackandwhite.sprite);
+    //   window.draw(corrupted.sprite);
+    //   window.display();
+    // }
     // std::cout << "Valori bianchi in pattern2: "
     //            << std::count(upd_pattern.begin(), upd_pattern.end(), 1) <<
     //            '\n';
@@ -68,7 +68,6 @@ int main() {
     //  auto pattern{hop.pattern(display.blackandwhite.image)};
     //  std::cout << "Valori bianchi in pattern2: "
     //            << std::count(pattern.begin(), pattern.end(), 1) << '\n';
-
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << '\n';
     return EXIT_FAILURE;
