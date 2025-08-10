@@ -33,10 +33,9 @@ class Hopfield {
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
   std::vector<std::string> files_{"Pillars.jpg", "Earring.png"};
-  sf::RenderWindow window_{sf::VideoMode(1600, 900), "Neural Network"};
 
  public:
-  sf::RenderWindow& window() { return window_; }
+  auto getN() const { return N_; }
   sf::Image loadImage(const std::string& filename);
   Drawable loadSprite(const std::string& filename);
   std::vector<Pixel> resizeimage(const sf::Image& image);
@@ -48,7 +47,7 @@ class Hopfield {
   void matrix();
   void getMatrix();
   void update(const std::vector<int>& corr_pattern);
-
+  std::vector<int> up(const std::vector<int>& corr_pattern);
   // intgetWidth() const { return width; }
   // intgetHeight() const { return height; }
 };
