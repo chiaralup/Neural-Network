@@ -39,7 +39,8 @@ class Hopfield {
   //                                 "supernova.jpg", "facciasignora.jpg"};
 
   std::vector<std::string> files_{"einstein.jpeg", "galileo.jpg",
-                                  "schrodinger.jpeg"};
+                                  "schrodinger.jpeg", "newton.jpg",
+                                  "facciasignora.jpg"};
 
  public:
   auto getN() const { return N_; }
