@@ -23,16 +23,16 @@ int main() {
 
     Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(25., 250.);
-    std::vector<int> baw_pattern{hop.pattern(initial.image)};
+    Pattern baw_pattern{hop.pattern(initial.image)};
     Drawable blackandwhite{hop.blackandwhite(baw_pattern)};
     blackandwhite.sprite.setPosition(650., 250.);
-    std::vector<int> corr_pattern{hop.corruption(baw_pattern)};
+    Pattern corr_pattern{hop.corruption(baw_pattern)};
     Drawable corrupted{hop.blackandwhite(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
     corrupted.sprite.setPosition(1150., 250.);
 
-    std::vector<int> current_state{corr_pattern};
-    std::vector<int> next_state{current_state};
+    Pattern current_state{corr_pattern};
+    Pattern next_state{current_state};
     bool finished{false};
     sf::Clock clock;
 

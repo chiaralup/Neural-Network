@@ -6,6 +6,7 @@
 #include <iostream>
 
 using Matrix = std::vector<std::vector<double>>;
+using Pattern = std::vector<int>;
 
 struct Pixel {
   unsigned int pr;
@@ -32,23 +33,26 @@ class Hopfield {
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
-  std::vector<std::string> files_{"Pillars.jpg", "Earring.png", };
+  std::vector<std::string> files_{
+      "Pillars.jpg",
+      "Earring.png",
+  };
 
  public:
   auto getN() const { return N_; }
   sf::Image loadImage(const std::string& filename);
   Drawable loadSprite(const std::string& filename);
   std::vector<Pixel> resizeimage(const sf::Image& image);
-  std::vector<int> pattern(const sf::Image& image);
-  Drawable blackandwhite(const std::vector<int>& image);
-  std::vector<int> corruption(const std::vector<int>& pattern);
-  auto loadPatterns();
+  Pattern pattern(const sf::Image& image);
+  Drawable blackandwhite(const Pattern& pattern);
+  Pattern corruption(const Pattern& pattern);
+  std::vector<Pattern> loadPatterns();
   Display screen(const std::string& filename);
   void matrix();
   void getMatrix();
-  void update(const std::vector<int>& corr_pattern);
-  std::vector<int> up(const std::vector<int>& corr_pattern);
-  double energy(const std::vector<int>& state);
+  void update(const Pattern& corr_pattern);
+  Pattern up(const Pattern& corr_pattern);
+  double energy(const Pattern& state);
   // intgetWidth() const { return width; }
   // intgetHeight() const { return height; }
 };

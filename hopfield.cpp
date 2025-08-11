@@ -65,8 +65,8 @@ std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
   return p;
 }
 
-std::vector<int> Hopfield::pattern(const sf::Image& image) {
-  std::vector<int> pattern;
+Pattern Hopfield::pattern(const sf::Image& image) {
+  Pattern pattern;
   auto p{resizeimage(image)};
   for (unsigned int r{0}; r < height_; ++r) {
     for (unsigned int c{0}; c < width_; ++c) {
@@ -82,8 +82,8 @@ std::vector<int> Hopfield::pattern(const sf::Image& image) {
   return pattern;
 }
 
-auto Hopfield::loadPatterns() {
-  std::vector<std::vector<int>> patterns;
+std::vector<Pattern> Hopfield::loadPatterns() {
+  std::vector<Pattern> patterns;
   for (unsigned int i{0}; i < files_.size(); ++i) {
     sf::Image image{loadImage(files_[i])};
     patterns.push_back(pattern(image));
@@ -91,7 +91,7 @@ auto Hopfield::loadPatterns() {
   return patterns;
 }
 
-Drawable Hopfield::blackandwhite(const std::vector<int>& pattern) {
+Drawable Hopfield::blackandwhite(const Pattern& pattern) {
   Drawable drawable;
   drawable.image.create(width_, height_, sf::Color::Black);
 
@@ -110,11 +110,11 @@ Drawable Hopfield::blackandwhite(const std::vector<int>& pattern) {
   return drawable;
 }
 
-std::vector<int> Hopfield::corruption(const std::vector<int>& pattern) {
+Pattern Hopfield::corruption(const Pattern& pattern) {
   std::default_random_engine eng;
   std::uniform_int_distribution<unsigned int> random_pix(0, N_ - 1);
 
-  std::vector<int> corr_pattern{pattern};
+  Pattern corr_pattern{pattern};
 
   // modificare
 
@@ -239,8 +239,8 @@ void Hopfield::getMatrix() {
 // }
 //
 
-std::vector<int> Hopfield::up(const std::vector<int>& corr_pattern) {
-  std::vector<int> new_pattern{corr_pattern};
+Pattern Hopfield::up(const Pattern& corr_pattern) {
+  Pattern new_pattern{corr_pattern};
 
   for (unsigned int i{0}; i < N_; ++i) {
     double sum{0.};
@@ -252,7 +252,7 @@ std::vector<int> Hopfield::up(const std::vector<int>& corr_pattern) {
   return new_pattern;
 }
 
-double Hopfield::energy(const std::vector<int>& state) {
+double Hopfield::energy(const Pattern& state) {
   double energy;
   double sum{0.};
   for (unsigned int i{0}; i < N_; ++i) {
