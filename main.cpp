@@ -52,32 +52,35 @@ int main() {
         }
       }
 
-      if (!finished && clock.getElapsedTime().asMilliseconds() > 500) {
+      window.clear();
+
+      if (!first_screen && !finished &&
+          clock.getElapsedTime().asMilliseconds() > 500) {
         next_state = hop.up(current_state);
         if (next_state == current_state) {
           finished = true;
         }
-        current_state = next_state;
+
         std::cout << "Energy = " << hop.energy(current_state) << '\n';
+
+        Drawable updated{hop.blackandwhite(current_state)};
+        updated.sprite.setScale(3.f, 3.f);
+        updated.sprite.setPosition(350., 250.);
+
+        window.clear();
+        window.draw(initial.sprite);
+        window.draw(updated.sprite);
+        window.draw(corrupted.sprite);
+
+        current_state = next_state;
 
         clock.restart();
       }
 
-      window.clear();
+      window.draw(initial.sprite);
+      window.draw(blackandwhite.sprite);
+      window.draw(corrupted.sprite);
 
-      if (first_screen) {
-        window.draw(initial.sprite);
-        window.draw(blackandwhite.sprite);
-        window.draw(corrupted.sprite);
-      } else {
-        window.draw(initial.sprite);
-        window.draw(corrupted.sprite);
-
-        Drawable updated{hop.blackandwhite(current_state)};
-        updated.sprite.setScale(3.f, 3.f);
-        updated.sprite.setPosition(350., 100.);
-        window.draw(updated.sprite);
-      }
       window.display();
     }
 

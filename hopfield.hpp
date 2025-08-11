@@ -40,7 +40,7 @@ class Hopfield {
 
   std::vector<std::string> files_{"einstein.jpeg", "galileo.jpg",
                                   "schrodinger.jpeg", "newton.jpg",
-                                  "brad.jpg"};
+                                  "pitt.jpg"};
 
  public:
   auto getN() const { return N_; }
