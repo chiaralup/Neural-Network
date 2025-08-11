@@ -27,16 +27,19 @@ struct Display {
 };
 
 class Hopfield {
-  unsigned int width_{45};
-  unsigned int height_{45};
+  unsigned int width_{42};
+  unsigned int height_{51};
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
-  std::vector<std::string> files_{"pillars.jpg",         "merginggalaxies.jpg",
-                                  "cosmiccliffs.jpg",    "crabnebula.jpg",
-                                  "globularcluster.jpg", "opencluster.jpg",
-                                  "penguin.jpg",         "NGC628.jpg",
-                                  "supernova.jpg",       "facciasignora.jpg"};
+  // std::vector<std::string> files_{"pillars.jpg", "merginggalaxies.jpg",
+  //                                 "cosmiccliffs.jpg",    "crabnebula.jpg",
+  //                                 "globularcluster.jpg", "opencluster.jpg",
+  //                                 "penguin.jpg",         "NGC628.jpg",
+  //                                 "supernova.jpg", "facciasignora.jpg"};
+
+  std::vector<std::string> files_{"einstein.jpeg", "galileo.jpg",
+                                  "schrodinger.jpeg"};
 
  public:
   auto getN() const { return N_; }
