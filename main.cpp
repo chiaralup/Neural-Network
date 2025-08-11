@@ -9,11 +9,11 @@
 int main() {
   try {
     Hopfield hop;
-    sf::RenderWindow window(sf::VideoMode(1600, 900), "Neural Network");
+    sf::RenderWindow window(sf::VideoMode(900, 600), "Neural Network");
 
-    // std::cout << "Choose an image: Pillars.jpg or Earring.png" << '\n';
-    std::string filename{"Earring.png"};
-    // std::cin >> filename;
+    std::cout << "Choose an image: .." << '\n';
+    std::string filename;
+    std::cin >> filename;
 
     // hop.matrix();
 
@@ -25,7 +25,8 @@ int main() {
     initial.sprite.setPosition(25., 250.);
     Pattern baw_pattern{hop.pattern(initial.image)};
     Drawable blackandwhite{hop.blackandwhite(baw_pattern)};
-    blackandwhite.sprite.setPosition(650., 250.);
+    blackandwhite.sprite.setScale(3.f, 3.f);
+    blackandwhite.sprite.setPosition(400., 250.);
     Pattern corr_pattern{hop.corruption(baw_pattern)};
     Drawable corrupted{hop.blackandwhite(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
@@ -61,8 +62,10 @@ int main() {
       updated.sprite.setScale(3.f, 3.f);
       updated.sprite.setPosition(100., 100.);
       window.draw(updated.sprite);
+      window.draw(blackandwhite.sprite);
       window.display();
 
+      //
       // window.draw(initial);
       // window.draw(blackandwhite);
       // window.draw(corrupted);

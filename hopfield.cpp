@@ -118,7 +118,7 @@ Pattern Hopfield::corruption(const Pattern& pattern) {
 
   // modificare
 
-  for (unsigned int i{0}; i < (N_ / 2); ++i) {
+  for (unsigned int i{0}; i < (N_ / 10); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
