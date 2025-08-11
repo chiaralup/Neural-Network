@@ -39,11 +39,13 @@ class Hopfield {
   //                                 "supernova.jpg", "facciasignora.jpg"};
 
   std::vector<std::string> files_{"einstein.jpeg", "galileo.jpg",
-                                  "schrodinger.jpeg", "newton.jpg",
-                                  "pitt.jpg"};
+                                  "schrodinger.jpeg", 
+                                  "pitt.jpg", "queenEl.jpeg"};
 
  public:
   auto getN() const { return N_; }
+  auto getWidth() const { return width_; }
+  auto getHeight() const { return height_; }
   sf::Image loadImage(const std::string& filename);
   Drawable loadSprite(const std::string& filename);
   std::vector<Pixel> resizeimage(const sf::Image& image);
@@ -57,8 +59,6 @@ class Hopfield {
   void update(const Pattern& corr_pattern);
   Pattern up(const Pattern& corr_pattern);
   double energy(const Pattern& state);
-  // intgetWidth() const { return width; }
-  // intgetHeight() const { return height; }
 };
 
 #endif

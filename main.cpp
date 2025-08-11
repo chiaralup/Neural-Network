@@ -37,7 +37,7 @@ int main() {
     bool first_screen{true};
     sf::Clock clock;
 
-    sf::RenderWindow window(sf::VideoMode(900., 600.), "Neural Network");
+    sf::RenderWindow window(sf::VideoMode(900, 600), "Neural Network");
 
     while (window.isOpen()) {
       sf::Event event;
@@ -54,36 +54,35 @@ int main() {
 
       window.clear();
 
-      if (!first_screen && !finished &&
-          clock.getElapsedTime().asMilliseconds() > 500) {
-        next_state = hop.up(current_state);
-        if (next_state == current_state) {
-          finished = true;
-        }
+      if (first_screen) {
+        window.draw(initial.sprite);
+        window.draw(blackandwhite.sprite);
+        window.draw(corrupted.sprite);
+      } else {
+        if (!first_screen && !finished &&
+            clock.getElapsedTime().asMilliseconds() > 500) {
+          next_state = hop.up(current_state);
+          if (next_state == current_state) {
+            finished = true;
+          }
 
-        std::cout << "Energy = " << hop.energy(current_state) << '\n';
+          std::cout << "Energy = " << hop.energy(current_state) << '\n';
+          current_state = next_state;
+
+          clock.restart();
+        }
 
         Drawable updated{hop.blackandwhite(current_state)};
         updated.sprite.setScale(3.f, 3.f);
-        updated.sprite.setPosition(350., 250.);
+        updated.sprite.setPosition(350., 100.);
 
-        window.clear();
         window.draw(initial.sprite);
+        window.draw(blackandwhite.sprite);
         window.draw(updated.sprite);
         window.draw(corrupted.sprite);
-
-        current_state = next_state;
-
-        clock.restart();
       }
-
-      window.draw(initial.sprite);
-      window.draw(blackandwhite.sprite);
-      window.draw(corrupted.sprite);
-
       window.display();
     }
-
     //  Display display{hop.display(filename)};
     //  auto pattern{hop.pattern(display.blackandwhite.image)};
   } catch (const std::exception& e) {
