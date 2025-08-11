@@ -61,7 +61,7 @@ int main() {
       } else {
         if (!first_screen && !finished &&
             clock.getElapsedTime().asMilliseconds() > 500) {
-          next_state = hop.up(current_state);
+          next_state = hop.update(current_state);
           if (next_state == current_state) {
             finished = true;
           }

@@ -32,13 +32,13 @@ std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
 
   for (unsigned int r{0}; r < height_; ++r) {
     double by = static_cast<double>(height_) / static_cast<double>(size.y);
-    double y{static_cast<double>(r) / static_cast<double>(by)};
+    double y{static_cast<double>(r) / by};
     unsigned int j{static_cast<unsigned int>(y)};
     double t{y - j};
 
     for (unsigned int c{0}; c < width_; ++c) {
       double bx = static_cast<double>(width_) / static_cast<double>(size.x);
-      double x{static_cast<double>(c) / static_cast<double>(bx)};
+      double x{static_cast<double>(c) / bx};
       unsigned int i{static_cast<unsigned int>(x)};
       double s{x - i};
 
@@ -177,12 +177,11 @@ void Hopfield::matrix() {  // L'ABBIAAMO USATA SOLO PER SCRIVERE SU FILE
       if (i == j) {
         W[i][j] = 0.;
       } else {
-        double sum =
-            std::accumulate(patterns.begin(), patterns.end(), 0.,
-                            [i, j](double total, const std::vector<int>& p) {
-                              return total + static_cast<double>(p[i] * p[j]);
-                            });
-        W[i][j] = sum / static_cast<double>(N_);
+        int sum = std::accumulate(patterns.begin(), patterns.end(), 0.,
+                                  [i, j](double total, const Pattern& p) {
+                                    return total + p[i] * p[j];
+                                  });
+        W[i][j] = static_cast<double>(sum) / static_cast<double>(N_);
       }
       file << W[i][j] << " ";
     }
@@ -239,7 +238,7 @@ void Hopfield::getMatrix() {
 // }
 //
 
-Pattern Hopfield::up(const Pattern& corr_pattern) {
+Pattern Hopfield::update(const Pattern& corr_pattern) {
   Pattern new_pattern{corr_pattern};
 
   for (unsigned int i{0}; i < N_; ++i) {

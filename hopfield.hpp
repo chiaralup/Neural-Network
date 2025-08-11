@@ -38,9 +38,9 @@ class Hopfield {
   //                                 "penguin.jpg",         "NGC628.jpg",
   //                                 "supernova.jpg", "facciasignora.jpg"};
 
-  std::vector<std::string> files_{"einstein.jpeg", "galileo.jpg",
-                                  "schrodinger.jpeg", 
-                                  "pitt.jpg", "queenEl.jpeg"};
+  std::vector<std::string> files_{
+      "avogadro.jpg", "curie.png",      "einstein.jpeg", "feynman.jpg",
+      "galileo.png", "heisenberg.jpg", "hopfield.jpg",  "schrodinger.jpeg"};
 
  public:
   auto getN() const { return N_; }
@@ -56,8 +56,8 @@ class Hopfield {
   Display screen(const std::string& filename);
   void matrix();
   void getMatrix();
-  void update(const Pattern& corr_pattern);
-  Pattern up(const Pattern& corr_pattern);
+  //void update(const Pattern& corr_pattern);
+  Pattern update(const Pattern& corr_pattern);
   double energy(const Pattern& state);
 };
 
