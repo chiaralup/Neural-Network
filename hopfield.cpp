@@ -177,10 +177,10 @@ void Hopfield::matrix() {  // L'ABBIAAMO USATA SOLO PER SCRIVERE SU FILE
       if (i == j) {
         W[i][j] = 0.;
       } else {
-        int sum = std::accumulate(patterns.begin(), patterns.end(), 0.,
-                                  [i, j](double total, const Pattern& p) {
-                                    return total + p[i] * p[j];
-                                  });
+        double sum = std::accumulate(patterns.begin(), patterns.end(), 0.,
+                                     [i, j](double total, const Pattern& p) {
+                                       return total + p[i] * p[j];
+                                     });
         W[i][j] = static_cast<double>(sum) / static_cast<double>(N_);
       }
       file << W[i][j] << " ";

@@ -40,10 +40,11 @@ class Hopfield {
 
   std::vector<std::string> files_{
       "avogadro.jpg", "curie.png",      "einstein.jpeg", "feynman.jpg",
-      "galileo.png", "heisenberg.jpg", "hopfield.jpg",  "schrodinger.jpeg"};
+      "galileo.png",  "heisenberg.jpg", "hopfield.jpg",  "schrodinger.jpeg"};
 
  public:
   auto getN() const { return N_; }
+
   auto getWidth() const { return width_; }
   auto getHeight() const { return height_; }
   sf::Image loadImage(const std::string& filename);
@@ -56,7 +57,7 @@ class Hopfield {
   Display screen(const std::string& filename);
   void matrix();
   void getMatrix();
-  //void update(const Pattern& corr_pattern);
+  // void update(const Pattern& corr_pattern);
   Pattern update(const Pattern& corr_pattern);
   double energy(const Pattern& state);
 };
