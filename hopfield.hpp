@@ -27,15 +27,14 @@ struct Display {
 };
 
 class Hopfield {
- private:
   unsigned int width_{42};
   unsigned int height_{51};
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
   std::vector<std::string> files_{
-      "Pillars.jpg",
-      "Earring.png",
+      "pillars.jpg",
+      "merginggalaxies.jpg",
   };
 
  public:
