@@ -10,9 +10,13 @@ int main() {
   try {
     Hopfield hop;
 
-    std::cout << "Choose an image: ..." << '\n';
-    std::string filename;
-    std::cin >> filename;
+    std::cout << "Choose an image: Avogadro, Curie, Einstein, Feynman, "
+                 "Galileo, Heisenberg, Hopfield or Schrodinger"
+              << '\n';
+    std::string name;
+    std::cin >> name;
+
+    std::string filename = name + ".png";
 
     // hop.matrix();
 
@@ -53,20 +57,20 @@ int main() {
       }
 
       window.clear();
-      
+
       if (first_screen) {
         window.draw(initial.sprite);
         window.draw(blackandwhite.sprite);
         window.draw(corrupted.sprite);
       } else {
-      if (!first_screen && !finished &&
-          clock.getElapsedTime().asMilliseconds() > 500) {
+        if (!first_screen && !finished &&
+            clock.getElapsedTime().asMilliseconds() > 500) {
           next_state = hop.update(current_state);
-        if (next_state == current_state) {
-          finished = true;
-        }
+          if (next_state == current_state) {
+            finished = true;
+          }
 
-        std::cout << "Energy = " << hop.energy(current_state) << '\n';
+          std::cout << "Energy = " << hop.energy(current_state) << '\n';
           current_state = next_state;
 
           clock.restart();

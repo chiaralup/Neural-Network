@@ -26,6 +26,17 @@ struct Display {
   Drawable corrupted;
 };
 
+//enum class Image {
+//  AVOGADRO,
+//  CURIE,
+//  EINSTEIN,
+//  FEYNMAN,
+//  GALILEO,
+//  HEISEINBERG,
+//  HOPFIELD,
+//  SCHRODINGER
+//};
+
 class Hopfield {
   unsigned int width_{42};
   unsigned int height_{51};
