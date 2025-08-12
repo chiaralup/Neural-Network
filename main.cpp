@@ -8,7 +8,7 @@
 
 int main() {
   try {
-    Hopfield hop(42, 51);
+    nn::Hopfield hop(42, 51);
 
     std::cout << "Choose an image: Avogadro, Curie, Einstein, Feynman, "
                  "Galileo, Heisenberg, Hopfield or Schrodinger"
@@ -24,14 +24,14 @@ int main() {
 
     // Display dis{hop.screen(filename)};
 
-    Drawable initial{hop.loadSprite(filename)};
+    nn::Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(25., 250.);
     Pattern baw_pattern{hop.pattern(initial.image)};
-    Drawable blackandwhite{hop.blackandwhite(baw_pattern)};
+    nn::Drawable blackandwhite{hop.baw_image(baw_pattern)};
     blackandwhite.sprite.setScale(3.f, 3.f);
     blackandwhite.sprite.setPosition(350., 250.);
     Pattern corr_pattern{hop.corruption(baw_pattern)};
-    Drawable corrupted{hop.blackandwhite(corr_pattern)};
+    nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
     corrupted.sprite.setPosition(500., 250.);
 
@@ -76,7 +76,7 @@ int main() {
           clock.restart();
         }
 
-        Drawable updated{hop.blackandwhite(current_state)};
+        nn::Drawable updated{hop.baw_image(current_state)};
         updated.sprite.setScale(3.f, 3.f);
         updated.sprite.setPosition(350., 100.);
 

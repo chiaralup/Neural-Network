@@ -1,13 +1,18 @@
 #include "hopfield.hpp"
 
-#include <SFML/Graphics.hpp>
+#include <cassert>
+#include <filesystem>
+#include <fstream>
 #include <random>
 
+namespace nn {
 sf::Image Hopfield::loadImage(const std::string& filename) {
   sf::Image image;
-  std::string path = "./images/" + filename;
 
-  if (!image.loadFromFile(path)) {
+  auto basePath = std::filesystem::path(__FILE__).parent_path();
+  auto fullPath = basePath / "images" / filename;
+
+  if (!image.loadFromFile(fullPath.string())) {
     throw std::runtime_error{"Error during image charging"};
   }
 
@@ -16,11 +21,13 @@ sf::Image Hopfield::loadImage(const std::string& filename) {
 
 Drawable Hopfield::loadSprite(const std::string& filename) {
   Drawable drawable;
-  std::string path = "./images/" + filename;
 
-  drawable.image = Hopfield::loadImage(path);
+  auto basePath = std::filesystem::path(__FILE__).parent_path();
+  auto fullPath = basePath / "images" / filename;
 
-  if (!drawable.texture.loadFromFile(path)) {
+  drawable.image = Hopfield::loadImage(filename);
+
+  if (!drawable.texture.loadFromFile(fullPath.string())) {
     throw std::runtime_error{"Error during texture charging"};
   }
 
@@ -29,7 +36,7 @@ Drawable Hopfield::loadSprite(const std::string& filename) {
   return drawable;
 }
 
-std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
+std::vector<Pixel> Hopfield::resize_image(const sf::Image& image) {
   std::vector<Pixel> p;
   auto size{image.getSize()};
 
@@ -70,7 +77,7 @@ std::vector<Pixel> Hopfield::resizeimage(const sf::Image& image) {
 
 Pattern Hopfield::pattern(const sf::Image& image) {
   Pattern pattern;
-  auto p{resizeimage(image)};
+  auto p{resize_image(image)};
   for (unsigned int r{0}; r < height_; ++r) {
     for (unsigned int c{0}; c < width_; ++c) {
       unsigned int index = r * width_ + c;
@@ -94,7 +101,7 @@ std::vector<Pattern> Hopfield::loadPatterns() {
   return patterns;
 }
 
-Drawable Hopfield::blackandwhite(const Pattern& pattern) {
+Drawable Hopfield::baw_image(const Pattern& pattern) {
   Drawable drawable;
   drawable.image.create(width_, height_, sf::Color::Black);
 
@@ -265,3 +272,5 @@ double Hopfield::energy(const Pattern& state) {
   energy = sum / (-2.);
   return energy;
 }
+
+}  // namespace nn
