@@ -5,8 +5,9 @@
 
 sf::Image Hopfield::loadImage(const std::string& filename) {
   sf::Image image;
+  std::string path = "./images/" + filename;
 
-  if (!image.loadFromFile(filename)) {
+  if (!image.loadFromFile(path)) {
     throw std::runtime_error{"Error during image charging"};
   }
 
@@ -15,9 +16,11 @@ sf::Image Hopfield::loadImage(const std::string& filename) {
 
 Drawable Hopfield::loadSprite(const std::string& filename) {
   Drawable drawable;
-  drawable.image = Hopfield::loadImage(filename);
+  std::string path = "./images/" + filename;
 
-  if (!drawable.texture.loadFromFile(filename)) {
+  drawable.image = Hopfield::loadImage(path);
+
+  if (!drawable.texture.loadFromFile(path)) {
     throw std::runtime_error{"Error during texture charging"};
   }
 
