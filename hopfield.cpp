@@ -265,8 +265,3 @@ double Hopfield::energy(const Pattern& state) {
   energy = sum / (-2.);
   return energy;
 }
-
-//  assert(pattern1_.size() == width * height); //li mettiamo nel main?
-//  assert(pattern2_.size() == width * height); //li mettiamo nel main?
-//  assert(pattern(image1).size() == pattern(image2).size());
-// li mettiamo nel main?

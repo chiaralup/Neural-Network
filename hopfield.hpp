@@ -26,36 +26,20 @@ struct Display {
   Drawable corrupted;
 };
 
-//enum class Image {
-//  AVOGADRO,
-//  CURIE,
-//  EINSTEIN,
-//  FEYNMAN,
-//  GALILEO,
-//  HEISEINBERG,
-//  HOPFIELD,
-//  SCHRODINGER
-//};
-
 class Hopfield {
-  unsigned int width_{42};
-  unsigned int height_{51};
+  unsigned int width_;
+  unsigned int height_;
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
-  // std::vector<std::string> files_{"pillars.jpg", "merginggalaxies.jpg",
-  //                                 "cosmiccliffs.jpg",    "crabnebula.jpg",
-  //                                 "globularcluster.jpg", "opencluster.jpg",
-  //                                 "penguin.jpg",         "NGC628.jpg",
-  //                                 "supernova.jpg", "facciasignora.jpg"};
-
   std::vector<std::string> files_{
-      "avogadro.png", "curie.png",      "einstein.png", "feynman.png",
-      "galileo.png",  "heisenberg.png", "hopfield.png",  "schrodinger.png"};
+      "Avogadro.png", "Curie.png",      "Einstein.png", "Feynman.png",
+      "Galileo.png",  "Heisenberg.png", "Hopfield.png", "Schrodinger.png"};
 
  public:
+  Hopfield(unsigned int width, unsigned int height)
+      : width_{width}, height_{height} {};
   auto getN() const { return N_; }
-
   auto getWidth() const { return width_; }
   auto getHeight() const { return height_; }
   sf::Image loadImage(const std::string& filename);

@@ -48,8 +48,10 @@ target_link_libraries(neuralnet PRIVATE sfml-graphics)
 if (BUILD_TESTING)
 
   # aggiungi l'eseguibile progetto.t
-  add_executable(neuralnet.t test.cpp)
+  add_executable(neuralnet.t test.cpp hopfield.cpp)
+  # librerie necessarie per il test
+  target_link_libraries(neuralnet.t PRIVATE sfml-graphics)
   # aggiungi l'eseguibile progetto.t alla lista dei test
-  add_test(NAME neuralnet.t COMMAND neuralnet.t)
+  add_test(NAME neuralnet.t COMMAND neuralnet.t )
 
 endif()

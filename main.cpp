@@ -8,7 +8,7 @@
 
 int main() {
   try {
-    Hopfield hop;
+    Hopfield hop(42, 51);
 
     std::cout << "Choose an image: Avogadro, Curie, Einstein, Feynman, "
                  "Galileo, Heisenberg, Hopfield or Schrodinger"
