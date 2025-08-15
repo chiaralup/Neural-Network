@@ -65,6 +65,159 @@ TEST_CASE("Testing Hopfield Neural Network") {
   }
 }
 
+TEST_CASE("Testing the funciotn baw_image") {
+  nn::Hopfield hop(2, 2);
+
+  SUBCASE("Colored image conversion") {  // gli do un'immagine colorata 2x2
+    sf::Image img;
+    img.create(2, 2, sf::Color::Black);
+    img.setPixel(0, 0, sf::Color(200, 127, 150));
+    img.setPixel(1, 1, sf::Color(150, 87, 255));
+
+    Pattern pat = hop.pattern(img);
+
+    nn::Drawable drawable = hop.baw_image(pat);
+
+    CHECK(drawable.image.getSize().x == hop.getWidth());
+    CHECK(drawable.image.getSize().y == hop.getHeight());
+
+    // Controllo pixel secondo la soglia
+    CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
+    CHECK(drawable.image.getPixel(1, 0) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(0, 1) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(1, 1) == sf::Color::White);
+  }
+}
+
+TEST_CASE("Testing baw_image") {
+  nn::Hopfield hop(4, 4);
+  SUBCASE("image") {
+    sf::Image img;
+    img.create(4, 4, sf::Color::Black);
+
+    img.setPixel(0, 0, sf::Color(131, 27, 254));
+    img.setPixel(1, 2, sf::Color(34, 183, 200));
+    img.setPixel(3, 3, sf::Color(227, 145, 67));
+    Pattern pat = hop.pattern(img);
+    nn::Drawable drawable = hop.baw_image(pat);
+
+    CHECK(drawable.image.getSize().x == hop.getWidth());
+    CHECK(drawable.image.getSize().y == hop.getHeight());
+
+    CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
+    CHECK(drawable.image.getPixel(1, 1) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(1, 2) == sf::Color::White);
+    CHECK(drawable.image.getPixel(2, 2) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(3, 3) == sf::Color::White);
+  }
+}
+
+TEST_CASE("Testing that each image is converted to black and white") {
+  nn::Hopfield hop(42, 51);  // o la dimensione che ti serve
+
+  SUBCASE("Avogadro") {
+    sf::Image img{hop.loadImage("Avogadro.png")};
+    Pattern pat = hop.pattern(img);
+
+    nn::Drawable drawable = hop.baw_image(pat);
+
+    CHECK(drawable.image.getSize().x == hop.getWidth());
+    CHECK(drawable.image.getSize().y == hop.getHeight());
+
+    for (unsigned int i{0}; i < drawable.image.getSize().x; ++i) {
+      for (unsigned int j{0}; j < drawable.image.getSize().y; ++j) {
+        sf::Color c = drawable.image.getPixel(i, j);
+        CHECK((c == sf::Color::Black || c == sf::Color::White));
+      }
+    }
+  }
+
+  SUBCASE("Einstein") {
+    sf::Image img{hop.loadImage("Einstein.png")};
+    Pattern pat = hop.pattern(img);
+
+    nn::Drawable drawable = hop.baw_image(pat);
+
+    CHECK(drawable.image.getSize().x == hop.getWidth());
+    CHECK(drawable.image.getSize().y == hop.getHeight());
+
+    for (unsigned int i{0}; i < drawable.image.getSize().x; ++i) {
+      for (unsigned int j{0}; j < drawable.image.getSize().y; ++j) {
+        sf::Color c = drawable.image.getPixel(i, j);
+        CHECK((c == sf::Color::Black || c == sf::Color::White));
+      }
+    }
+  }
+}
+
+TEST_CASE("Testing corruption ") {
+  nn::Hopfield hop(42, 51);
+
+  SUBCASE("Einstein") {
+    sf::Image img = hop.loadImage("Einstein.png");
+    Pattern pat = hop.pattern(img);
+    nn::Drawable drawable = hop.baw_image(pat);
+    Pattern corrupted{pat};
+
+    std::default_random_engine eng;
+    std::uniform_int_distribution<unsigned int> random_pix(
+        0, static_cast<unsigned int>(pat.size()) - 1);
+
+    for (unsigned int i = 0; i < (pat.size() / 10); ++i) {
+      auto a = random_pix(eng);
+      auto b = random_pix(eng);
+      std::swap(corrupted[a], corrupted[b]);
+    }
+
+    CHECK(corrupted.size() == pat.size());
+
+    for (auto val : corrupted) {
+      CHECK((val == 1 || val == -1));
+    }
+
+    bool changed = false;
+    for (unsigned int i = 0; i < pat.size(); ++i) {
+      if (pat[i] != corrupted[i]) {
+        changed = true;
+        break;
+      }
+    }
+    CHECK(changed);
+  }
+
+  SUBCASE("Curie") {
+    sf::Image img = hop.loadImage("Curie.png");
+    Pattern pat = hop.pattern(img);
+    nn::Drawable drawable = hop.baw_image(pat);
+    Pattern corrupted{pat};
+
+    std::default_random_engine eng;
+    std::uniform_int_distribution<unsigned int> random_pix(
+        0, static_cast<unsigned int>(pat.size()) - 1);
+
+    for (unsigned int i = 0; i < (pat.size() / 10); ++i) {
+      auto a = random_pix(eng);
+      auto b = random_pix(eng);
+      std::swap(corrupted[a], corrupted[b]);
+    }
+
+    CHECK(corrupted.size() == pat.size());
+
+    for (auto val : corrupted) {
+      CHECK((val == 1 || val == -1));
+    }
+
+    bool changed = false;
+    for (unsigned int i = 0; i < pat.size(); ++i) {
+      if (pat[i] != corrupted[i]) {
+        changed = true;
+        break;
+      }
+    }
+    CHECK(changed);
+  }
+}
+
 // TEST_CASE("Testing resizeimage with 2x2 image") {
 
 //   Hopfield hop(2, 2);

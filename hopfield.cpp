@@ -1,9 +1,6 @@
 #include "hopfield.hpp"
 
-#include <cassert>
-#include <filesystem>
-#include <fstream>
-#include <random>
+
 
 namespace nn {
 sf::Image Hopfield::loadImage(const std::string& filename) {

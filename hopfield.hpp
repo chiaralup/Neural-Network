@@ -1,7 +1,11 @@
 #ifndef HOPFIELD_HPP
 #define HOPFIELD_HPP
 
-#include <SFML/Graphics.hpp> //la mettiamo qui perché serve nei test
+#include <SFML/Graphics.hpp>  //la mettiamo qui perché serve nei test
+#include <cassert>
+#include <filesystem>
+#include <fstream>
+#include <random>
 
 using Pattern = std::vector<int>;
 using Matrix = std::vector<std::vector<double>>;
@@ -42,8 +46,10 @@ class Hopfield {
   auto getN() const { return N_; }
   auto getWidth() const { return width_; }
   auto getHeight() const { return height_; }
-  sf::Image loadImage(const std::string&); //è necessario che stiano dentro la classe? 
-  Drawable loadSprite(const std::string&); //è necessario che stiano dentro la classe?
+  sf::Image loadImage(
+      const std::string&);  // è necessario che stiano dentro la classe?
+  Drawable loadSprite(
+      const std::string&);  // è necessario che stiano dentro la classe?
   std::vector<Pixel> resize_image(const sf::Image&);
   Pattern pattern(const sf::Image&);
   Drawable baw_image(const Pattern&);
