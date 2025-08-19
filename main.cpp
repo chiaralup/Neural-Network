@@ -25,15 +25,15 @@ int main() {
     // Display dis{hop.screen(filename)};
 
     nn::Drawable initial{hop.loadSprite(filename)};
-    initial.sprite.setPosition(25., 250.);
+    initial.sprite.setPosition(70., 180.);
     Pattern baw_pattern{hop.pattern(initial.image)};
     nn::Drawable blackandwhite{hop.baw_image(baw_pattern)};
     blackandwhite.sprite.setScale(3.f, 3.f);
-    blackandwhite.sprite.setPosition(350., 250.);
+    blackandwhite.sprite.setPosition(325., 250.);
     Pattern corr_pattern{hop.corruption(baw_pattern)};
     nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
-    corrupted.sprite.setPosition(500., 250.);
+    corrupted.sprite.setPosition(475., 250.);
 
     Pattern current_state{corr_pattern};
     Pattern next_state{current_state};
@@ -41,7 +41,7 @@ int main() {
     bool first_screen{true};
     sf::Clock clock;
 
-    sf::RenderWindow window(sf::VideoMode(900, 600), "Neural Network");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Neural Network");
 
     while (window.isOpen()) {
       sf::Event event;
@@ -78,7 +78,7 @@ int main() {
 
         nn::Drawable updated{hop.baw_image(current_state)};
         updated.sprite.setScale(3.f, 3.f);
-        updated.sprite.setPosition(350., 100.);
+        updated.sprite.setPosition(325., 100.);
 
         window.draw(initial.sprite);
         window.draw(blackandwhite.sprite);
