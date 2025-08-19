@@ -1,7 +1,5 @@
 #include "hopfield.hpp"
 
-
-
 namespace nn {
 sf::Image Hopfield::loadImage(const std::string& filename) {
   sf::Image image;

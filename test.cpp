@@ -65,52 +65,78 @@ TEST_CASE("Testing Hopfield Neural Network") {
   }
 }
 
-TEST_CASE("Testing the funciotn baw_image") {
-  nn::Hopfield hop(2, 2);
+TEST_CASE("Testing loadPatterns") {
+  nn::Hopfield hop(42, 51);
 
-  SUBCASE("Colored image conversion") {  // gli do un'immagine colorata 2x2
-    sf::Image img;
-    img.create(2, 2, sf::Color::Black);
-    img.setPixel(0, 0, sf::Color(200, 127, 150));
-    img.setPixel(1, 1, sf::Color(150, 87, 255));
+  std::vector<std::string> files = {
+      "Avogadro.png", "Curie.png",      "Einstein.png", "Feynman.png",
+      "Galileo.png",  "Heisenberg.png", "Hopfield.png", "Schrodinger.png"};
 
-    Pattern pat = hop.pattern(img);
+  SUBCASE("Should load the correct number of patterns and correct size") {
+    std::vector<Pattern> loadedPatterns = hop.loadPatterns();
 
-    nn::Drawable drawable = hop.baw_image(pat);
+    CHECK(loadedPatterns.size() ==
+          files.size());  // pattern caricati = numero file
 
-    CHECK(drawable.image.getSize().x == hop.getWidth());
-    CHECK(drawable.image.getSize().y == hop.getHeight());
+    for (const auto& pat : loadedPatterns) {
+      CHECK(pat.size() == hop.getN());  // dimensione giusta
+    }
 
-    // Controllo pixel secondo la soglia
-    CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
-    CHECK(drawable.image.getPixel(1, 0) == sf::Color::Black);
-    CHECK(drawable.image.getPixel(0, 1) == sf::Color::Black);
-    CHECK(drawable.image.getPixel(1, 1) == sf::Color::White);
+    if (!loadedPatterns.empty()) {  // controllo siano -1 o 1
+      for (const auto& pat : loadedPatterns) {
+        CHECK(!pat.empty());
+        for (int val : pat) {
+          CHECK((val == -1 || val == 1));
+        }
+      }
+    }
   }
 }
 
-TEST_CASE("Testing baw_image") {
-  nn::Hopfield hop(4, 4);
-  SUBCASE("image") {
-    sf::Image img;
-    img.create(4, 4, sf::Color::Black);
-
-    img.setPixel(0, 0, sf::Color(131, 27, 254));
-    img.setPixel(1, 2, sf::Color(34, 183, 200));
-    img.setPixel(3, 3, sf::Color(227, 145, 67));
-    Pattern pat = hop.pattern(img);
-    nn::Drawable drawable = hop.baw_image(pat);
-
-    CHECK(drawable.image.getSize().x == hop.getWidth());
-    CHECK(drawable.image.getSize().y == hop.getHeight());
-
-    CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
-    CHECK(drawable.image.getPixel(1, 1) == sf::Color::Black);
-    CHECK(drawable.image.getPixel(1, 2) == sf::Color::White);
-    CHECK(drawable.image.getPixel(2, 2) == sf::Color::Black);
-    CHECK(drawable.image.getPixel(3, 3) == sf::Color::White);
-  }
-}
+// NON SO SE SIANO NECESSARIE, DA VEDERE SE TOGLIERLE O LASCIARLE
+// TEST_CASE("Testing the function baw_image") {
+//  nn::Hopfield hop(2, 2);
+//
+//  sf::Image img;
+//  img.create(2, 2, sf::Color::Black);
+//  img.setPixel(0, 0, sf::Color(200, 127, 150));
+//  img.setPixel(1, 1, sf::Color(150, 87, 255));
+//
+//  Pattern pat = hop.pattern(img);
+//
+//  nn::Drawable drawable = hop.baw_image(pat);
+//
+//  CHECK(drawable.image.getSize().x == hop.getWidth());
+//  CHECK(drawable.image.getSize().y == hop.getHeight());
+//
+//  // Controllo pixel secondo la soglia
+//  CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
+//  CHECK(drawable.image.getPixel(1, 0) == sf::Color::Black);
+//  CHECK(drawable.image.getPixel(0, 1) == sf::Color::Black);
+//  CHECK(drawable.image.getPixel(1, 1) == sf::Color::White);
+//}
+//
+// TEST_CASE("Testing baw_image") {
+//  nn::Hopfield hop(4, 4);
+//
+//  sf::Image img;
+//  img.create(4, 4, sf::Color::Black);
+//
+//  img.setPixel(0, 0, sf::Color(131, 27, 254));
+//  img.setPixel(1, 2, sf::Color(34, 183, 200));
+//  img.setPixel(3, 3, sf::Color(227, 145, 67));
+//  Pattern pat = hop.pattern(img);
+//  nn::Drawable drawable = hop.baw_image(pat);
+//
+//  CHECK(drawable.image.getSize().x == hop.getWidth());
+//  CHECK(drawable.image.getSize().y == hop.getHeight());
+//
+//  CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
+//  CHECK(drawable.image.getPixel(1, 1) == sf::Color::Black);
+//  CHECK(drawable.image.getPixel(1, 2) == sf::Color::White);
+//  CHECK(drawable.image.getPixel(2, 2) == sf::Color::Black);
+//  CHECK(drawable.image.getPixel(3, 3) == sf::Color::White);
+//}
 
 TEST_CASE("Testing that each image is converted to black and white") {
   nn::Hopfield hop(42, 51);  // o la dimensione che ti serve
@@ -218,39 +244,30 @@ TEST_CASE("Testing corruption ") {
   }
 }
 
-// TEST_CASE("Testing resizeimage with 2x2 image") {
+TEST_CASE("Testing update function with zero-initialized weights") {
+  nn::Hopfield hop(2, 2);
 
-//   Hopfield hop(2, 2);
-//
-//   sf::Image image;
-//   image.create(3, 3, sf::Color::White);
-//   image.setPixel(0, 0, sf::Color::Black);
-//   image.setPixel(0, 1, sf::Color(255, 0, 0));
-//   image.setPixel(0, 2, sf::Color::White);
-//   image.setPixel(1, 0, sf::Color(0, 255, 0));
-//   image.setPixel(1, 1, sf::Color(0, 0, 255));
-//   image.setPixel(1, 2, sf::Color(0, 255, 255));
-//   image.setPixel(2, 0, sf::Color(50, 85, 70));
-//   image.setPixel(2, 1, sf::Color(245, 245, 220));
-//   image.setPixel(2, 2, sf::Color(7, 14, 28));
-//
-//   auto resized = hop.resizeimage(image);
-//
-//   CHECK(resized.size() == 4);
-//
-//   CHECK(resized[0].pr == 0);
-//   CHECK(resized[0].pg == 0);
-//   CHECK(resized[0].pb == 0);
-//
-//   CHECK(resized[1].pr == 255);
-//   CHECK(resized[1].pg == 0);
-//   CHECK(resized[1].pb == 0);
-//
-//   CHECK(resized[2].pr == 0);
-//   CHECK(resized[2].pg == 255);
-//   CHECK(resized[2].pb == 0);
-//
-//   CHECK(resized[3].pr == 0);
-//   CHECK(resized[3].pg == 0);
-//   CHECK(resized[3].pb == 255);
-// }
+  SUBCASE("Any input pattern should transform to all 1s due to zero weights") {
+    unsigned int N = hop.getN();
+
+    Pattern pat = {1, -1, 1, -1};
+    Pattern expectedPat(N, 1);
+    Pattern newPat{hop.update(pat)};
+
+    CHECK(newPat == expectedPat);
+  }
+
+  SUBCASE("A 4x4 pattern should transform to all ones due to zero weights") {
+    nn::Hopfield hopf(4, 4);
+    unsigned int N = hopf.getN();
+
+    Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, 1};
+
+    CHECK(pattern.size() == N);
+    Pattern expectedPattern(N, 1);
+
+    Pattern actualPattern = hopf.update(pattern);
+
+    CHECK(actualPattern == expectedPattern);
+  }
+}
