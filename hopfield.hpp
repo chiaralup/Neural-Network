@@ -7,10 +7,10 @@
 #include <fstream>
 #include <random>
 
+namespace nn {
+
 using Pattern = std::vector<int>;
 using Matrix = std::vector<std::vector<double>>;
-
-namespace nn {
 
 struct Pixel {
   unsigned int pr;
@@ -36,31 +36,30 @@ class Hopfield {
   unsigned int N_{width_ * height_};
   Matrix W_{N_, std::vector<double>(N_, 0.)};
 
-  std::vector<std::string> files_{
-      "Avogadro.png", "Curie.png",      "Einstein.png", "Feynman.png",
-      "Galileo.png",  "Heisenberg.png", "Hopfield.png", "Schrodinger.png"};
+  std::vector<std::string> files_{"Avogadro.png", "Curie.png",
+                                  "Einstein.png", "Heisenberg.png",
+                                  "Hopfield.png", "Schrodinger.png"};
 
  public:
   Hopfield(unsigned int width, unsigned int height)
       : width_{width}, height_{height} {}
-  auto getN() const { return N_; }
-  auto getWidth() const { return width_; }
-  auto getHeight() const { return height_; }
+  unsigned int getWidth() const;
+  unsigned int getHeight() const;
+  unsigned int getN() const;
   sf::Image loadImage(
-      const std::string&);  // è necessario che stiano dentro la classe?
+      std::string const&);  // è necessario che stiano dentro la classe?
   Drawable loadSprite(
-      const std::string&);  // è necessario che stiano dentro la classe?
-  std::vector<Pixel> resize_image(const sf::Image&);
-  Pattern pattern(const sf::Image&);
-  Drawable baw_image(const Pattern&);
-  Pattern corruption(const Pattern&);
+      std::string const&);  // è necessario che stiano dentro la classe?
+  std::vector<Pixel> resize_image(sf::Image const&);
+  Pattern pattern(sf::Image const&);
+  Drawable baw_image(Pattern const&);
+  Pattern corruption(Pattern const&);
   std::vector<Pattern> loadPatterns();
-  Display screen(const std::string&);
+  // Display screen(std::string const&);
   void matrix();
   void getMatrix();
-  // void update(const Pattern&);
-  Pattern update(const Pattern&);
-  double energy(const Pattern&);
+  Pattern update(Pattern const&);
+  double energy(Pattern const&);
 };
 }  // namespace nn
 

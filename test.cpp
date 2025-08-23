@@ -39,7 +39,7 @@ TEST_CASE("Testing Hopfield Neural Network") {
       CHECK(resized[i].pb == 0);
     }
 
-    Pattern black_pattern{hop.pattern(total_black)};
+    nn::Pattern black_pattern{hop.pattern(total_black)};
     std::vector<int> v(hop.getN(), -1);
 
     CHECK(black_pattern == v);
@@ -58,7 +58,7 @@ TEST_CASE("Testing Hopfield Neural Network") {
       CHECK(resized[i].pb == 255);
     }
 
-    Pattern black_pattern{hop.pattern(total_white)};
+    nn::Pattern black_pattern{hop.pattern(total_white)};
     std::vector<int> v(hop.getN(), 1);
 
     CHECK(black_pattern == v);
@@ -73,7 +73,7 @@ TEST_CASE("Testing loadPatterns") {
       "Galileo.png",  "Heisenberg.png", "Hopfield.png", "Schrodinger.png"};
 
   SUBCASE("Should load the correct number of patterns and correct size") {
-    std::vector<Pattern> loadedPatterns = hop.loadPatterns();
+    std::vector<nn::Pattern> loadedPatterns = hop.loadPatterns();
 
     CHECK(loadedPatterns.size() ==
           files.size());  // pattern caricati = numero file
@@ -94,6 +94,7 @@ TEST_CASE("Testing loadPatterns") {
 }
 
 // NON SO SE SIANO NECESSARIE, DA VEDERE SE TOGLIERLE O LASCIARLE
+
 // TEST_CASE("Testing the function baw_image") {
 //  nn::Hopfield hop(2, 2);
 //
@@ -143,7 +144,7 @@ TEST_CASE("Testing that each image is converted to black and white") {
 
   SUBCASE("Avogadro") {
     sf::Image img{hop.loadImage("Avogadro.png")};
-    Pattern pat = hop.pattern(img);
+    nn::Pattern pat = hop.pattern(img);
 
     nn::Drawable drawable = hop.baw_image(pat);
 
@@ -160,7 +161,7 @@ TEST_CASE("Testing that each image is converted to black and white") {
 
   SUBCASE("Einstein") {
     sf::Image img{hop.loadImage("Einstein.png")};
-    Pattern pat = hop.pattern(img);
+    nn::Pattern pat = hop.pattern(img);
 
     nn::Drawable drawable = hop.baw_image(pat);
 
@@ -181,9 +182,9 @@ TEST_CASE("Testing corruption ") {
 
   SUBCASE("Einstein") {
     sf::Image img = hop.loadImage("Einstein.png");
-    Pattern pat = hop.pattern(img);
+    nn::Pattern pat = hop.pattern(img);
     nn::Drawable drawable = hop.baw_image(pat);
-    Pattern corrupted{pat};
+    nn::Pattern corrupted{pat};
 
     std::default_random_engine eng;
     std::uniform_int_distribution<unsigned int> random_pix(
@@ -213,9 +214,9 @@ TEST_CASE("Testing corruption ") {
 
   SUBCASE("Curie") {
     sf::Image img = hop.loadImage("Curie.png");
-    Pattern pat = hop.pattern(img);
+    nn::Pattern pat = hop.pattern(img);
     nn::Drawable drawable = hop.baw_image(pat);
-    Pattern corrupted{pat};
+    nn::Pattern corrupted{pat};
 
     std::default_random_engine eng;
     std::uniform_int_distribution<unsigned int> random_pix(
@@ -250,9 +251,9 @@ TEST_CASE("Testing update function with zero-initialized weights") {
   SUBCASE("Any input pattern should transform to all 1s due to zero weights") {
     unsigned int N = hop.getN();
 
-    Pattern pat = {1, -1, 1, -1};
-    Pattern expectedPat(N, 1);
-    Pattern newPat{hop.update(pat)};
+    nn::Pattern pat = {1, -1, 1, -1};
+    nn::Pattern expectedPat(N, 1);
+    nn::Pattern newPat{hop.update(pat)};
 
     CHECK(newPat == expectedPat);
   }
@@ -261,12 +262,13 @@ TEST_CASE("Testing update function with zero-initialized weights") {
     nn::Hopfield hopf(4, 4);
     unsigned int N = hopf.getN();
 
-    Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, 1};
+    nn::Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1,
+                           1, -1, 1, -1, -1, 1, -1, 1};
 
     CHECK(pattern.size() == N);
-    Pattern expectedPattern(N, 1);
+    nn::Pattern expectedPattern(N, 1);
 
-    Pattern actualPattern = hopf.update(pattern);
+    nn::Pattern actualPattern = hopf.update(pattern);
 
     CHECK(actualPattern == expectedPattern);
   }

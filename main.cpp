@@ -10,15 +10,15 @@ int main() {
   try {
     nn::Hopfield hop(42, 51);
 
-    std::cout << "Choose an image: Avogadro, Curie, Einstein, Feynman, "
-                 "Galileo, Heisenberg, Hopfield or Schrodinger"
+    std::cout << "Choose an image: Avogadro, Curie, Einstein,"
+                 "Heisenberg, Hopfield or Schrodinger"
               << '\n';
     std::string name;
     std::cin >> name;
 
     std::string filename = name + ".png";
 
-    //hop.matrix();
+    hop.matrix();
 
     hop.getMatrix();
 
@@ -26,17 +26,17 @@ int main() {
 
     nn::Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(70., 180.);
-    Pattern baw_pattern{hop.pattern(initial.image)};
+    nn::Pattern baw_pattern{hop.pattern(initial.image)};
     nn::Drawable blackandwhite{hop.baw_image(baw_pattern)};
     blackandwhite.sprite.setScale(3.f, 3.f);
     blackandwhite.sprite.setPosition(325., 250.);
-    Pattern corr_pattern{hop.corruption(baw_pattern)};
+    nn::Pattern corr_pattern{hop.corruption(baw_pattern)};
     nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
     corrupted.sprite.setPosition(475., 250.);
 
-    Pattern current_state{corr_pattern};
-    Pattern next_state{current_state};
+    nn::Pattern current_state{corr_pattern};
+    nn::Pattern next_state{current_state};
     bool finished{false};
     bool first_screen{true};
     sf::Clock clock;
