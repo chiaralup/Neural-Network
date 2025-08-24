@@ -11,17 +11,18 @@ int main() {
     nn::Hopfield hop(42, 51);
 
     std::cout << "Choose an image: Avogadro, Curie, Einstein,"
-                 "Heisenberg, Hopfield or Schrodinger"
-              << '\n';
+                 "Heisenberg, Hopfield or Schrodinger\n";
     std::string name;
     std::cin >> name;
 
     std::string filename = name + ".png";
 
-    //auto patterns{hop.loadPatterns()};
-    //hop.matrix(patterns);
+    auto patterns{hop.loadPatterns()};
+    hop.matrix(patterns);
 
     hop.getMatrix();
+
+    nn::Matrix W{hop.getMatrix()};
 
     // Display dis{hop.screen(filename)};
 
@@ -31,14 +32,11 @@ int main() {
     nn::Drawable blackandwhite{hop.baw_image(baw_pattern)};
     blackandwhite.sprite.setScale(3.f, 3.f);
     blackandwhite.sprite.setPosition(325., 250.);
-    nn::Pattern corr_pattern{hop.corruption(baw_pattern)};
+    nn::Pattern corr_pattern{hop.corruption(baw_pattern, 10)};
     nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
     corrupted.sprite.setPosition(475., 250.);
 
-    nn::Pattern current_state{corr_pattern};
-    nn::Pattern next_state{current_state};
-    bool finished{false};
     bool first_screen{true};
     sf::Clock clock;
 
@@ -63,38 +61,34 @@ int main() {
         window.draw(initial.sprite);
         window.draw(blackandwhite.sprite);
         window.draw(corrupted.sprite);
+
       } else {
-        if (!first_screen && !finished &&
-            clock.getElapsedTime().asMilliseconds() > 500) {
-          next_state = hop.update(current_state);
-          if (next_state == current_state) {
-            finished = true;
-          }
+        auto evolution{hop.updating(corr_pattern, W)};
 
-          std::cout << "Energy = " << hop.energy(current_state) << '\n';
-          current_state = next_state;
+        for (nn::Pattern p : evolution) {
+          nn::Drawable updated{hop.baw_image(p)};
+          updated.sprite.setScale(3.f, 3.f);
+          updated.sprite.setPosition(325., 100.);
+          window.draw(updated.sprite);
 
-          clock.restart();
+          std::cout << "Energy = " << hop.energy(p) << '\n';
         }
 
-        nn::Drawable updated{hop.baw_image(current_state)};
-        updated.sprite.setScale(3.f, 3.f);
-        updated.sprite.setPosition(325., 100.);
-
-        window.draw(initial.sprite);
-        window.draw(blackandwhite.sprite);
-        window.draw(updated.sprite);
-        window.draw(corrupted.sprite);
+        clock.restart();
       }
-      window.display();
+      window.draw(initial.sprite);
+      window.draw(blackandwhite.sprite);
+      window.draw(corrupted.sprite);
     }
-    //  Display display{hop.display(filename)};
-    //  auto pattern{hop.pattern(display.blackandwhite.image)};
-  } catch (const std::exception& e) {
+    window.display();
+  }
+  //  Display display{hop.display(filename)};
+  //  auto pattern{hop.pattern(display.blackandwhite.image)};}
+  catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << '\n';
     return EXIT_FAILURE;
   } catch (...) {
     std::cerr << "Unknown exception occurred!" << '\n';
     return EXIT_FAILURE;
   }
-};
+}

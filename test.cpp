@@ -376,3 +376,4 @@ TEST_CASE("Testing neural network with 4 neurons") {
     }
   }
 }
+

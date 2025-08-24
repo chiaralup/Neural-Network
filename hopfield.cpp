@@ -232,87 +232,34 @@ Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
   return W_;
 }
 
-// void Hopfield::update(const std::vector<int>& corr_pattern) {
-//   std::vector<int> old_pattern{corr_pattern};
-//   std::vector<int> new_pattern{corr_pattern};
-//
-//   while (true) {
-//     for (unsigned int i{0}; i < getN(); ++i) {
-//       double sum{0.};
-//       for (unsigned int j{0}; j < getN(); ++j) {
-//         sum += (W_[i][j] * old_pattern[j]);
-//       }
-//       new_pattern[i] = (sum < 0) ? -1 : 1;
-//     }
-//
-//     Drawable drawable{blackandwhite(new_pattern)};
-//     drawable.sprite.setScale(3.f, 3.f);
-//     window().draw(drawable.sprite);
-//     window().display();
-//
-//     if (new_pattern == old_pattern) {
-//       break;
-//     }
-//     sf::sleep(sf::milliseconds(100));
-//     old_pattern = new_pattern;
-//   }
-// }
-//
-
 Pattern Hopfield::update(Pattern const& corr_pattern, Matrix const& W) {
   Pattern new_pattern{corr_pattern};
-
 
   for (unsigned int i{0}; i < getN(); ++i) {
     double sum{0.};
     for (unsigned int j{0}; j < getN(); ++j) {
-      sum += (W[i][j] * corr_pattern[j]);
+      sum += (W[i][j] * new_pattern[j]);
     }
     new_pattern[i] = (sum < 0) ? -1 : 1;
   }
   return new_pattern;
 }
 
-Pattern Hopfield::updating(Pattern const& corr_pattern, Matrix const& W) {
+std::vector<Pattern> Hopfield::updating(Pattern const& corr_pattern,
+                                        Matrix const& W) {
   Pattern current_state{corr_pattern};
   Pattern next_state{update(current_state, W)};
+
+  std::vector<Pattern> evolution{next_state};
+
   while (next_state != current_state) {
     current_state = next_state;
     next_state = update(next_state, W);
+    evolution.push_back(next_state);
   }
-  return next_state;
-}
 
-// Pattern Hopfield::update(const Pattern& initial_pattern) {
-//   Pattern current_state = initial_pattern;
-//   Pattern next_state;
-//   bool finished = false;
-//
-//   while (!finished) {
-//     next_state = current_state; // Inizializza next_state con il pattern
-//     corrente bool changed = false; for (unsigned int i = 0; i < getN(); ++i)
-//     {
-//       double sum = 0.;
-//       for (unsigned int j = 0; j < getN(); ++j) {
-//         sum += (W_[i][j] * current_state[j]);
-//       }
-//       int new_value = (sum < 0) ? -1 : 1;
-//       if (new_value != next_state[i]) {
-//         next_state[i] = new_value;
-//         changed = true;
-//       }
-//     }
-//
-//     if (!changed) {
-//       finished = true;
-//     }
-//
-//     // Aggiorna lo stato per l'iterazione successiva
-//     current_state = next_state;
-//   }
-//
-//   return current_state;
-// }
+  return evolution;
+}
 
 double Hopfield::energy(Pattern const& state) {
   double energy;

@@ -60,7 +60,7 @@ class Hopfield {
   void matrix(std::vector<Pattern> const&);
   Matrix getMatrix();
   Pattern update(Pattern const&, Matrix const&);
-   Pattern updating(Pattern const&, Matrix const&);
+  std::vector<Pattern> updating(Pattern const&, Matrix const&);
   double energy(Pattern const&);
 };
 }  // namespace nn
