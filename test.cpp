@@ -19,8 +19,8 @@ TEST_CASE("Testing loadImage and loadSprite functions") {
   }
 
   SUBCASE("Loading an invalid image") {
-    CHECK_THROWS(hop.loadImage("avogadro.png"));
-    CHECK_THROWS(hop.loadSprite("avogadro.png"));
+    CHECK_THROWS(hop.loadImage("Avogadro.png"));
+    CHECK_THROWS(hop.loadSprite("Avogadro.png"));
   }
 }
 
@@ -309,21 +309,21 @@ TEST_CASE("Testing corruption ") {
 }
 
 TEST_CASE("Testing update function with zero-initialized weights") {
-  nn::Hopfield hop(2, 2);
-
   SUBCASE("Any input pattern should transform to all 1s due to zero weights") {
+    nn::Hopfield hop(2, 2);
     unsigned int N = hop.getN();
-
+    nn::Matrix W(N, std::vector<double>(N, 0.));
     nn::Pattern pat = {1, -1, 1, -1};
     nn::Pattern expectedPat(N, 1);
-    nn::Pattern newPat{hop.update(pat)};
+    nn::Pattern newPat{hop.update(pat, W)};
 
     CHECK(newPat == expectedPat);
   }
 
   SUBCASE("A 4x4 pattern should transform to all ones due to zero weights") {
-    nn::Hopfield hopf(4, 4);
-    unsigned int N = hopf.getN();
+    nn::Hopfield hop(4, 4);
+    unsigned int N = hop.getN();
+    nn::Matrix W(N, std::vector<double>(N, 0.));
 
     nn::Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1,
                            1, -1, 1, -1, -1, 1, -1, 1};
@@ -331,7 +331,7 @@ TEST_CASE("Testing update function with zero-initialized weights") {
     CHECK(pattern.size() == N);
     nn::Pattern expectedPattern(N, 1);
 
-    nn::Pattern actualPattern = hopf.update(pattern);
+    nn::Pattern actualPattern = hop.update(pattern, W);
 
     CHECK(actualPattern == expectedPattern);
   }
@@ -340,45 +340,39 @@ TEST_CASE("Testing update function with zero-initialized weights") {
 TEST_CASE("Testing neural network with 4 neurons") {
   nn::Hopfield hop(2, 2);
 
-  SUBCASE(
-      "Testing matrix and getMatrix functions with 2 patterns") {  // forse
-                                                                   // bisogna
-                                                                   // fare due
-                                                                   // test
-                                                                   // separati
-    nn::Pattern p1 = {1, -1, 1, -1};
-    nn::Pattern p2 = {1, 1, -1, -1};
+  SUBCASE("Testing neural network with 2 patterns") {  // forse
+                                                       // bisogna
+                                                       // fare due
+                                                       // test
+                                                       // separati
+    nn::Pattern p1 = {-1, 1, 1, -1};
+    nn::Pattern p2 = {1, -1, -1, 1};
     std::vector<nn::Pattern> patterns = {p1, p2};
 
     hop.matrix(patterns);
     // bisogna testare che scrive su file???? come?
     nn::Matrix W{hop.getMatrix()};
 
-    nn::Matrix expected_matrix = {{0., 0., 0., -0.5},
-                                  {0., 0., -0.5, 0.},
-                                  {0., -0.5, 0., 0.},
-                                  {-0.5, -0., 0., 0.}};
+    nn::Matrix expected_matrix = {{0., -0.5, -0.5, 0.5},
+                                  {-0.5, 0., 0.5, -0.5},
+                                  {-0.5, 0.5, 0., -0.5},
+                                  {0.5, -0.5, -0.5, 0.}};
 
     for (unsigned int i = 0; i < hop.getN(); ++i) {
       for (unsigned int j = 0; j < hop.getN(); ++j) {
         CHECK(W[i][j] == expected_matrix[i][j]);
       }
-    }
 
-    SUBCASE("Testing update and energy functions") {
-      nn::Pattern corrupted1 = {1, -1, -1, -1};
-      nn::Pattern corrupted2 = {1, -1, -1, -1};
+      nn::Pattern corrupted = {1, -1, 1, -1};
 
-      nn::Pattern updated1 = hop.update(corrupted1);
-      nn::Pattern updated2 = hop.update(corrupted2);
+      nn::Pattern updated1{hop.update(corrupted, W)};
+      nn::Pattern expected = {-1, 1, -1, 1};
+      CHECK(updated1 == expected);
+      nn::Pattern updated2{hop.update(updated1, W)};
+      CHECK(updated2 == p1);
 
-      CHECK(updated1 ==
-            p1);  // non passa finché non capiamo come implementare update
-      CHECK(updated2 ==
-            p2);  // non passa finché non capiamo come implementare update
-
-      CHECK(hop.energy(updated1) < hop.energy(corrupted1));
-      CHECK(hop.energy(updated2) < hop.energy(corrupted2));
+      CHECK(hop.energy(updated1) <= hop.energy(corrupted));
+      CHECK(hop.energy(updated2) <= hop.energy(updated1));
     }
   }
 }

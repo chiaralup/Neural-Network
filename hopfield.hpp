@@ -54,12 +54,13 @@ class Hopfield {
   std::vector<Pixel> resize_image(sf::Image const&);
   Pattern pattern(sf::Image const&);
   Drawable baw_image(Pattern const&);
-  Pattern corruption(Pattern const&, int);
+  Pattern corruption(Pattern const&, unsigned int);
   std::vector<Pattern> loadPatterns();
   // Display screen(std::string const&);
   void matrix(std::vector<Pattern> const&);
   Matrix getMatrix();
-  Pattern update(Pattern const&);
+  Pattern update(Pattern const&, Matrix const&);
+   Pattern updating(Pattern const&, Matrix const&);
   double energy(Pattern const&);
 };
 }  // namespace nn
