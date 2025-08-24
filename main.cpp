@@ -132,9 +132,6 @@ int main() {
 
     // bool first_screen{true};
 
-    nn::Pattern current_evolution_state{corr_pattern};
-    nn::Drawable updated_drawable{corrupted};
-
     sf::RenderWindow window(sf::VideoMode(800, 600), "Neural Network");
     window.setFramerateLimit(60);
 
@@ -176,7 +173,8 @@ int main() {
             window.draw(updated.sprite);
           }
 
-          if (clock.getElapsedTime() >= updateInterval) {
+          if (clock.getElapsedTime() >=
+              updateInterval) {  // DA RIMETTERE L'ENERGIA
             if (step < evolution.size()) {
               ++step;  // vai al pattern successivo
             }
