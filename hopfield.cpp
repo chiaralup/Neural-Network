@@ -67,15 +67,15 @@ std::vector<Pixel> Hopfield::resize_image(sf::Image const& image) {
       const sf::Color p3{image.getPixel(i, j + 1)};
       const sf::Color p4{image.getPixel(i + 1, j + 1)};
 
-      const unsigned int pr{static_cast<unsigned int>(
-          (1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r + (1 - s) * t * p3.r +
-          s * t * p4.r)};
-      const unsigned int pg{static_cast<unsigned int>(
-          (1 - s) * (1 - t) * p1.g + s * (1 - t) * p2.g + (1 - s) * t * p3.g +
-          s * t * p4.g)};
-      const unsigned int pb{static_cast<unsigned int>(
-          (1 - s) * (1 - t) * p1.b + s * (1 - t) * p2.b + (1 - s) * t * p3.b +
-          s * t * p4.b)};
+      const unsigned int pr{std::round((1 - s) * (1 - t) * p1.r +
+                                       s * (1 - t) * p2.r + (1 - s) * t * p3.r +
+                                       s * t * p4.r)};
+      const unsigned int pg{std::round((1 - s) * (1 - t) * p1.g +
+                                       s * (1 - t) * p2.g + (1 - s) * t * p3.g +
+                                       s * t * p4.g)};
+      const unsigned int pb{std::round((1 - s) * (1 - t) * p1.b +
+                                       s * (1 - t) * p2.b + (1 - s) * t * p3.b +
+                                       s * t * p4.b)};
 
       assert(pr < 256 && pg < 256 && pb < 256);
 
@@ -232,34 +232,46 @@ Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
   return W_;
 }
 
-Pattern Hopfield::update(Pattern const& corr_pattern, Matrix const& W) {
+std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern,
+                                      Matrix const& W) {
+  Pattern default_pattern{Pattern(getN(), -1)};
   Pattern new_pattern{corr_pattern};
 
-  for (unsigned int i{0}; i < getN(); ++i) {
-    double sum{0.};
-    for (unsigned int j{0}; j < getN(); ++j) {
-      sum += (W[i][j] * new_pattern[j]);
+  std::vector<Pattern> evolution{default_pattern, new_pattern};
+  bool finished{evolution[evolution.size() - 1] ==
+                evolution[evolution.size() - 2]};
+
+  while (!finished) {
+    for (unsigned int i{0}; i < getN(); ++i) {
+      double sum{0.};
+      for (unsigned int j{0}; j < getN(); ++j) {
+        sum += (W[i][j] * new_pattern[j]);
+      }
+      new_pattern[i] = (sum < 0) ? -1 : 1;
+      evolution.push_back(new_pattern);
+      if (finished) {
+        break;
+      }
     }
-    new_pattern[i] = (sum < 0) ? -1 : 1;
   }
-  return new_pattern;
-}
-
-std::vector<Pattern> Hopfield::updating(Pattern const& corr_pattern,
-                                        Matrix const& W) {
-  Pattern current_state{corr_pattern};
-  Pattern next_state{update(current_state, W)};
-
-  std::vector<Pattern> evolution{next_state};
-
-  while (next_state != current_state) {
-    current_state = next_state;
-    next_state = update(next_state, W);
-    evolution.push_back(next_state);
-  }
-
   return evolution;
 }
+
+//std::vector<Pattern> Hopfield::updating(Pattern const& corr_pattern,
+//                                        Matrix const& W) {
+//  Pattern current_state{corr_pattern};
+//  Pattern next_state{update(current_state, W)};
+//
+//  std::vector<Pattern> evolution{next_state};
+//
+//  while (next_state != current_state) {
+//    current_state = next_state;
+//    next_state = update(next_state, W);
+//    evolution.push_back(next_state);
+//  }
+//
+//  return evolution;
+//}
 
 double Hopfield::energy(Pattern const& state) {
   double energy;
