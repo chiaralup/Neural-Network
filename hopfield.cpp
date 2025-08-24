@@ -6,7 +6,7 @@ unsigned int Hopfield::getWidth() const { return width_; }
 
 unsigned int Hopfield::getHeight() const { return height_; }
 
-unsigned int Hopfield::getN() const { return N_; }
+unsigned int Hopfield::getN() const { return width_ * height_; }
 
 sf::Image Hopfield::loadImage(std::string const& filename) {
   sf::Image image;
@@ -40,22 +40,21 @@ Drawable Hopfield::loadSprite(std::string const& filename) {
 
 std::vector<Pixel> Hopfield::resize_image(sf::Image const& image) {
   std::vector<Pixel> p;
-  auto size{image.getSize()};
+  const auto size{image.getSize()};
+  const double bx{static_cast<double>(width_) / static_cast<double>(size.x)};
+  const double by{static_cast<double>(height_) / static_cast<double>(size.y)};
 
   for (unsigned int r{0}; r < height_; ++r) {
-    const double by{static_cast<double>(height_) / static_cast<double>(size.y)};
     const double y{static_cast<double>(r) / by};
-    const unsigned int j{static_cast<unsigned int>(y)};
+    const unsigned int j{std::min(static_cast<unsigned int>(y), size.y - 2)};
     const double t{y - j};
 
     for (unsigned int c{0}; c < width_; ++c) {
-      const double bx{static_cast<double>(width_) /
-                      static_cast<double>(size.x)};
       const double x{static_cast<double>(c) / bx};
-      const unsigned int i{static_cast<unsigned int>(x)};
+      const unsigned int i{std::min(static_cast<unsigned int>(x), size.x - 2)};
       const double s{x - i};
 
-      assert(i + 1 <= size.x && j + 1 <= size.y);
+      assert(i + 1 < size.x && j + 1 < size.y);
 
       const sf::Color p1{image.getPixel(i, j)};
       const sf::Color p2{image.getPixel(i + 1, j)};
@@ -86,7 +85,7 @@ Pattern Hopfield::pattern(sf::Image const& image) {
   for (unsigned int r{0}; r < height_; ++r) {
     for (unsigned int c{0}; c < width_; ++c) {
       unsigned int index = r * width_ + c;
-      assert(index < p.size() && "Indice fuori dai limiti nel vettore p");
+      assert(index < p.size());
 
       Pixel& pix = p[index];
       double m{(pix.pr + pix.pg + pix.pb) / 3.0};
@@ -127,18 +126,18 @@ Drawable Hopfield::baw_image(Pattern const& pattern) {
 
 Pattern Hopfield::corruption(Pattern const& pattern) {
   std::default_random_engine eng;
-  std::uniform_int_distribution<unsigned int> random_pix(0, N_ - 1);
+  std::uniform_int_distribution<unsigned int> random_pix(0, getN() - 1);
 
   Pattern corr_pattern{pattern};
 
   // modificare
 
-  for (unsigned int i{0}; i < (N_ / 10); ++i) {
+  for (unsigned int i{0}; i < (getN() / 10); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
     std::swap(corr_pattern[a], corr_pattern[b]);
-    }
+  }
 
   return corr_pattern;
 }
@@ -177,16 +176,16 @@ Pattern Hopfield::corruption(Pattern const& pattern) {
 //
 // return display;}
 
-void Hopfield::matrix() {  // L'ABBIAMO USATA SOLO PER SCRIVERE SU FILE
+void Hopfield::matrix(std::vector<Pattern> const& patterns) {  // L'ABBIAMO USATA SOLO PER SCRIVERE SU FILE. CONTROLLARE IL TIPO DI RITORNO
   std::ofstream file("weights.txt");
   if (!file.is_open()) {
     throw std::runtime_error{"Impossibile aprire il file weight.txt!"};
   }
 
-  Matrix W(N_, std::vector<double>(N_, 0.));  // lasciamo così o W_?
-  auto patterns{loadPatterns()};
-  for (unsigned int i{0}; i < N_; ++i) {
-    for (unsigned int j{0}; j < N_; ++j) {
+  Matrix W(getN(), std::vector<double>(getN(), 0.));  // lasciamo così o W_?
+  
+  for (unsigned int i{0}; i < getN(); ++i) {
+    for (unsigned int j{0}; j < getN(); ++j) {
       if (i == j) {
         W[i][j] = 0.;
       } else {
@@ -194,7 +193,7 @@ void Hopfield::matrix() {  // L'ABBIAMO USATA SOLO PER SCRIVERE SU FILE
                                      [i, j](double total, const Pattern& p) {
                                        return total + p[i] * p[j];
                                      });
-        W[i][j] = static_cast<double>(sum) / static_cast<double>(N_);
+        W[i][j] = static_cast<double>(sum) / static_cast<double>(getN());
       }
       file << W[i][j] << " ";
     }
@@ -203,13 +202,13 @@ void Hopfield::matrix() {  // L'ABBIAMO USATA SOLO PER SCRIVERE SU FILE
   file.close();
 }
 
-void Hopfield::getMatrix() {
+Matrix Hopfield::getMatrix() { //VERIFICARE IL RETURN TYPE
   std::ifstream file{"./weights.txt"};
   if (!file) {
     throw std::runtime_error{"Impossible to open file!"};
   }
-  for (unsigned int i{0}; i < N_; ++i) {
-    for (unsigned int j{0}; j < N_; ++j) {
+  for (unsigned int i{0}; i < getN(); ++i) {
+    for (unsigned int j{0}; j < getN(); ++j) {
       double Wij{0.};
       file >> Wij;
       W_[i][j] = Wij;
@@ -222,6 +221,7 @@ void Hopfield::getMatrix() {
     }
   }
   file.close();
+  return W_;
 }
 
 // void Hopfield::update(const std::vector<int>& corr_pattern) {
@@ -229,9 +229,9 @@ void Hopfield::getMatrix() {
 //   std::vector<int> new_pattern{corr_pattern};
 //
 //   while (true) {
-//     for (unsigned int i{0}; i < N_; ++i) {
+//     for (unsigned int i{0}; i < getN(); ++i) {
 //       double sum{0.};
-//       for (unsigned int j{0}; j < N_; ++j) {
+//       for (unsigned int j{0}; j < getN(); ++j) {
 //         sum += (W_[i][j] * old_pattern[j]);
 //       }
 //       new_pattern[i] = (sum < 0) ? -1 : 1;
@@ -254,9 +254,9 @@ void Hopfield::getMatrix() {
 Pattern Hopfield::update(Pattern const& corr_pattern) {
   Pattern new_pattern{corr_pattern};
 
-  for (unsigned int i{0}; i < N_; ++i) {
+  for (unsigned int i{0}; i < getN(); ++i) {
     double sum{0.};
-    for (unsigned int j{0}; j < N_; ++j) {
+    for (unsigned int j{0}; j < getN(); ++j) {
       sum += (W_[i][j] * corr_pattern[j]);
     }
     new_pattern[i] = (sum < 0) ? -1 : 1;
@@ -271,9 +271,9 @@ Pattern Hopfield::update(Pattern const& corr_pattern) {
 //
 //   while (!finished) {
 //     next_state = current_state; // Inizializza next_state con il pattern
-//     corrente bool changed = false; for (unsigned int i = 0; i < N_; ++i) {
+//     corrente bool changed = false; for (unsigned int i = 0; i < getN(); ++i) {
 //       double sum = 0.;
-//       for (unsigned int j = 0; j < N_; ++j) {
+//       for (unsigned int j = 0; j < getN(); ++j) {
 //         sum += (W_[i][j] * current_state[j]);
 //       }
 //       int new_value = (sum < 0) ? -1 : 1;
@@ -297,8 +297,8 @@ Pattern Hopfield::update(Pattern const& corr_pattern) {
 double Hopfield::energy(Pattern const& state) {
   double energy;
   double sum{0.};
-  for (unsigned int i{0}; i < N_; ++i) {
-    for (unsigned int j{0}; j < N_; ++j) {
+  for (unsigned int i{0}; i < getN(); ++i) {
+    for (unsigned int j{0}; j < getN(); ++j) {
       sum += (W_[i][j] * state[i] * state[j]);
     }
   }

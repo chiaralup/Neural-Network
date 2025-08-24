@@ -18,7 +18,8 @@ int main() {
 
     std::string filename = name + ".png";
 
-    hop.matrix();
+    //auto patterns{hop.loadPatterns()};
+    //hop.matrix(patterns);
 
     hop.getMatrix();
 

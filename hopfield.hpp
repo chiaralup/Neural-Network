@@ -33,8 +33,7 @@ struct Display {
 class Hopfield {
   unsigned int width_;
   unsigned int height_;
-  unsigned int N_{width_ * height_};
-  Matrix W_{N_, std::vector<double>(N_, 0.)};
+  Matrix W_;
 
   std::vector<std::string> files_{"Avogadro.png", "Curie.png",
                                   "Einstein.png", "Heisenberg.png",
@@ -42,7 +41,9 @@ class Hopfield {
 
  public:
   Hopfield(unsigned int width, unsigned int height)
-      : width_{width}, height_{height} {}
+      : width_{width},
+        height_{height},
+        W_{width * height, std::vector<double>(width * height, 0.)} {}
   unsigned int getWidth() const;
   unsigned int getHeight() const;
   unsigned int getN() const;
@@ -56,8 +57,8 @@ class Hopfield {
   Pattern corruption(Pattern const&);
   std::vector<Pattern> loadPatterns();
   // Display screen(std::string const&);
-  void matrix();
-  void getMatrix();
+  void matrix(std::vector<Pattern> const&);
+  Matrix getMatrix();
   Pattern update(Pattern const&);
   double energy(Pattern const&);
 };
