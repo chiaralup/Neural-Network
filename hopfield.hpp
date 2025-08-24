@@ -54,7 +54,7 @@ class Hopfield {
   std::vector<Pixel> resize_image(sf::Image const&);
   Pattern pattern(sf::Image const&);
   Drawable baw_image(Pattern const&);
-  Pattern corruption(Pattern const&);
+  Pattern corruption(Pattern const&, int);
   std::vector<Pattern> loadPatterns();
   // Display screen(std::string const&);
   void matrix(std::vector<Pattern> const&);

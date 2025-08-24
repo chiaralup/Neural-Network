@@ -266,7 +266,7 @@ TEST_CASE("Testing corruption ") {
         "Einstein.png")};  // forse non è necessario caricare l'immagine
     nn::Pattern pat{hop.pattern(img)};
     nn::Drawable drawable{hop.baw_image(pat)};
-    nn::Pattern corrupted{hop.corruption(pat)};
+    nn::Pattern corrupted{hop.corruption(pat, 2)};
 
     CHECK(corrupted.size() == pat.size());
 
@@ -289,7 +289,7 @@ TEST_CASE("Testing corruption ") {
         "Curie.png");  // forse non è necessario caricare l'immagine
     nn::Pattern pat = hop.pattern(img);
     nn::Drawable drawable = hop.baw_image(pat);
-    nn::Pattern corrupted{hop.corruption(pat)};
+    nn::Pattern corrupted{hop.corruption(pat, 1)};
 
     CHECK(corrupted.size() == pat.size());
 

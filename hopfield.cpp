@@ -124,7 +124,7 @@ Drawable Hopfield::baw_image(Pattern const& pattern) {
   return drawable;
 }
 
-Pattern Hopfield::corruption(Pattern const& pattern) {
+Pattern Hopfield::corruption(Pattern const& pattern, int ratio) {
   std::default_random_engine eng;
   std::uniform_int_distribution<unsigned int> random_pix(0, getN() - 1);
 
@@ -132,7 +132,7 @@ Pattern Hopfield::corruption(Pattern const& pattern) {
 
   // modificare
 
-  for (unsigned int i{0}; i < (getN() / 10); ++i) {
+  for (unsigned int i{0}; i < (getN() / ratio); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
