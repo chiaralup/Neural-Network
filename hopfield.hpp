@@ -12,11 +12,11 @@ namespace nn {
 using Pattern = std::vector<int>;
 using Matrix = std::vector<std::vector<double>>;
 
-struct Pixel {
-  unsigned pr;
-  unsigned pg;
-  unsigned pb;
-};
+//struct Pixel {
+//  unsigned pr;
+//  unsigned pg;
+//  unsigned pb;
+//};
 
 struct Drawable {
   sf::Image image;
@@ -24,11 +24,11 @@ struct Drawable {
   sf::Sprite sprite;
 };
 
-struct Display {
-  Drawable initial;
-  Drawable blackandwhite;
-  Drawable corrupted;
-};
+//struct Display {
+//  Drawable initial;
+//  Drawable blackandwhite;
+//  Drawable corrupted;
+//};
 
 class Hopfield {
   unsigned width_;
@@ -58,7 +58,7 @@ class Hopfield {
   sf::Uint8 interpolation(unsigned p1, unsigned p2, unsigned p3, unsigned p4,
                           double s, double t);
   std::vector<sf::Color> resize_image(sf::Image const&);
-  Pattern& pattern(sf::Image const&);
+  Pattern pattern(sf::Image const&);
   Drawable baw_image(Pattern const&);
   Pattern corruption(Pattern const&, unsigned);
   std::vector<Pattern> loadPatterns();

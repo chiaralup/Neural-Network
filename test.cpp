@@ -19,8 +19,8 @@ TEST_CASE("Testing loadImage and loadSprite functions") {
   }
 
   SUBCASE("Loading an invalid image") {
-    CHECK_THROWS(hop.loadImage("Avogadro"));
-    CHECK_THROWS(hop.loadSprite("Avogadro"));
+    CHECK_THROWS(hop.loadImage("Pauli.png"));   // hanno sensoo??
+    CHECK_THROWS(hop.loadSprite("Pauli.png"));  // hanno sensoo??
   }
 }
 
@@ -33,7 +33,7 @@ TEST_CASE("Testing Hopfield Neural Network") {
 
     CHECK(resized.size() == hop.getN());
 
-    for (unsigned i{0}; i < 4; ++i) {
+    for (unsigned i{0}; i < hop.getN(); ++i) {
       CHECK(resized[i].r == 0);
       CHECK(resized[i].g == 0);
       CHECK(resized[i].b == 0);
@@ -68,7 +68,7 @@ TEST_CASE("Testing Hopfield Neural Network") {
 
     CHECK(resized.size() == hop.getN());
 
-    for (unsigned i{0}; i < 4; ++i) {
+    for (unsigned i{0}; i < hop.getN(); ++i) {
       CHECK(resized[i].r == 255);
       CHECK(resized[i].g == 255);
       CHECK(resized[i].b == 255);
@@ -174,17 +174,18 @@ TEST_CASE("Testing loadPatterns") {
 // NON SO SE SIANO NECESSARIE, DA VEDERE SE TOGLIERLE O LASCIARLE
 
 TEST_CASE("Testing the function baw_image") {
-  SUBCASE("Testing a 2x2 image") {
-    nn::Hopfield hop(2, 2);
+  SUBCASE("Testing a 3x3 image") {
+    nn::Hopfield hop(3, 3);
 
     sf::Image img;
-    img.create(2, 2, sf::Color::Black);
+    img.create(3, 3, sf::Color::Black);
     img.setPixel(0, 0, sf::Color(200, 127, 150));
     img.setPixel(1, 1, sf::Color(150, 87, 255));
+    img.setPixel(2, 0, sf::Color(168, 59, 207));
 
-    nn::Pattern pat = hop.pattern(img);
+    auto pat{hop.pattern(img)};
 
-    nn::Drawable drawable = hop.baw_image(pat);
+    nn::Drawable drawable{hop.baw_image(pat)};
 
     CHECK(drawable.image.getSize().x == hop.getWidth());
     CHECK(drawable.image.getSize().y == hop.getHeight());
@@ -192,8 +193,13 @@ TEST_CASE("Testing the function baw_image") {
     // Controllo pixel secondo la soglia
     CHECK(drawable.image.getPixel(0, 0) == sf::Color::White);
     CHECK(drawable.image.getPixel(1, 0) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(2, 0) == sf::Color::White);
     CHECK(drawable.image.getPixel(0, 1) == sf::Color::Black);
     CHECK(drawable.image.getPixel(1, 1) == sf::Color::White);
+    CHECK(drawable.image.getPixel(2, 1) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(0, 2) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(1, 2) == sf::Color::Black);
+    CHECK(drawable.image.getPixel(2, 2) == sf::Color::Black);
   }
 
   SUBCASE("Testing a 4x4 image") {
@@ -205,8 +211,8 @@ TEST_CASE("Testing the function baw_image") {
     img.setPixel(0, 0, sf::Color(131, 27, 254));
     img.setPixel(1, 2, sf::Color(34, 183, 200));
     img.setPixel(3, 3, sf::Color(227, 145, 67));
-    nn::Pattern pat = hop.pattern(img);
-    nn::Drawable drawable = hop.baw_image(pat);
+    nn::Pattern pat{hop.pattern(img)};
+    nn::Drawable drawable{hop.baw_image(pat)};
 
     CHECK(drawable.image.getSize().x == hop.getWidth());
     CHECK(drawable.image.getSize().y == hop.getHeight());
@@ -224,7 +230,7 @@ TEST_CASE("Testing that each image is converted to black and white") {
 
   SUBCASE("Avogadro") {
     sf::Image img{hop.loadImage("Avogadro.png")};
-    nn::Pattern pat = hop.pattern(img);
+    nn::Pattern pat{hop.pattern(img)};
 
     nn::Drawable drawable{hop.baw_image(pat)};
 
@@ -233,7 +239,7 @@ TEST_CASE("Testing that each image is converted to black and white") {
 
     for (unsigned i{0}; i < hop.getWidth(); ++i) {
       for (unsigned j{0}; j < hop.getHeight(); ++j) {
-        sf::Color color = drawable.image.getPixel(i, j);
+        sf::Color color{drawable.image.getPixel(i, j)};
         CHECK((color == sf::Color::Black || color == sf::Color::White));
       }
     }
@@ -242,9 +248,9 @@ TEST_CASE("Testing that each image is converted to black and white") {
   SUBCASE("Einstein") {
     sf::Image img{hop.loadImage(
         "Einstein.png")};  // forse non è necessario caricare l'immagine
-    nn::Pattern pat = hop.pattern(img);
+    nn::Pattern pat{hop.pattern(img)};
 
-    nn::Drawable drawable = hop.baw_image(pat);
+    nn::Drawable drawable{hop.baw_image(pat)};
 
     CHECK(drawable.image.getSize().x == hop.getWidth());
     CHECK(drawable.image.getSize().y == hop.getHeight());
@@ -274,8 +280,8 @@ TEST_CASE("Testing corruption ") {
       CHECK((val == 1 || val == -1));
     }
 
-    bool changed = false;
-    for (unsigned i = 0; i < pat.size(); ++i) {
+    bool changed{false};
+    for (unsigned i{0}; i < pat.size(); ++i) {
       if (pat[i] != corrupted[i]) {
         changed = true;
         break;
@@ -287,8 +293,8 @@ TEST_CASE("Testing corruption ") {
   SUBCASE("Curie") {
     sf::Image img = hop.loadImage(
         "Curie.png");  // forse non è necessario caricare l'immagine
-    nn::Pattern pat = hop.pattern(img);
-    nn::Drawable drawable = hop.baw_image(pat);
+    nn::Pattern pat{hop.pattern(img)};
+    nn::Drawable drawable{hop.baw_image(pat)};
     nn::Pattern corrupted{hop.corruption(pat, 1)};
 
     CHECK(corrupted.size() == pat.size());
@@ -297,8 +303,8 @@ TEST_CASE("Testing corruption ") {
       CHECK((val == 1 || val == -1));
     }
 
-    bool changed = false;
-    for (unsigned i = 0; i < pat.size(); ++i) {
+    bool changed{false};
+    for (unsigned i{0}; i < pat.size(); ++i) {
       if (pat[i] != corrupted[i]) {
         changed = true;
         break;
@@ -309,21 +315,29 @@ TEST_CASE("Testing corruption ") {
 }
 
 TEST_CASE("Testing update function with zero-initialized weights") {
-  SUBCASE("Any input pattern should transform to all 1s due to zero weights") {
+  SUBCASE(
+      "Any input pattern should transform to all ones due to zero weights") {
     nn::Hopfield hop(2, 2);
-    unsigned N = hop.getN();
+    unsigned N{hop.getN()};
     nn::Matrix W(N, std::vector<double>(N, 0.));
     nn::Pattern pat = {1, -1, 1, -1};
     nn::Pattern expectedPat(N, 1);
     auto newPat{hop.update(pat, W)};
     auto last_index{newPat.size() - 1};
 
+    std::cout << newPat.size() << '\n';
+
+    CHECK(newPat[last_index][0] == 1);
+    CHECK(newPat[last_index][1] == 1);
+    CHECK(newPat[last_index][2] == 1);
+    CHECK(newPat[last_index][3] == 1);
+
     CHECK(newPat[last_index] == expectedPat);
   }
 
   SUBCASE("A 4x4 pattern should transform to all ones due to zero weights") {
     nn::Hopfield hop(4, 4);
-    unsigned N = hop.getN();
+    unsigned N{hop.getN()};
     nn::Matrix W(N, std::vector<double>(N, 0.));
 
     nn::Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1,
@@ -356,8 +370,8 @@ TEST_CASE("Testing neural network with 4 neurons") {
                                   {-0.5, 0.5, 0., -0.5},
                                   {0.5, -0.5, -0.5, 0.}};
 
-    for (unsigned i = 0; i < hop.getN(); ++i) {
-      for (unsigned j = 0; j < hop.getN(); ++j) {
+    for (unsigned i{0}; i < hop.getN(); ++i) {
+      for (unsigned j{0}; j < hop.getN(); ++j) {
         CHECK(W[i][j] == expected_matrix[i][j]);
       }
     }
