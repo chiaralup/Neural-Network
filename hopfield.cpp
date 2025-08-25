@@ -250,32 +250,50 @@ Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
   return W_;
 }
 
-std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern) {
-  Pattern prev_state{corr_pattern};
-  Pattern curr_state{corr_pattern};
-  std::vector<Pattern> evolution;
-  evolution.push_back(corr_pattern);
+// std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern) {
+//   Pattern prev_state{corr_pattern};
+//   Pattern curr_state{corr_pattern};
+//   std::vector<Pattern> evolution;
+//   evolution.push_back(corr_pattern);
+//
+//   bool finished{false};
+//   auto n{getN()};
+//
+//   while (!finished) {
+//     for (unsigned i{0}; i < n; ++i) {
+//       double sum{0.};
+//       for (unsigned j{0}; j < n; ++j) {
+//         sum += (W_[i][j] * prev_state[j]);
+//       }
+//       curr_state[i] = (sum < 0) ? -1 : 1;
+//     }
+//
+//     if (curr_state == prev_state) {
+//       finished = true;
+//     } else {
+//       evolution.push_back(curr_state);
+//       prev_state = curr_state;
+//     }
+//   }
+//   return evolution;
+// }
 
-  bool finished{false};
+Pattern Hopfield::update(const Pattern& corr_pattern) {
+  Pattern new_pattern{corr_pattern};
+
   auto n{getN()};
 
-  while (!finished) {
-    for (unsigned i{0}; i < n; ++i) {
-      double sum{0.};
-      for (unsigned j{0}; j < n; ++j) {
-        sum += (W_[i][j] * curr_state[j]);
-      }
-      curr_state[i] = (sum < 0) ? -1 : 1;
+  for (unsigned i{0}; i < n; ++i) {
+    double sum{0.};
+
+    for (unsigned j{0}; j < n; ++j) {
+      sum += (W_[i][j] * new_pattern[j]);
     }
 
-    if (curr_state == prev_state) {
-      finished = true;
-    } else {
-      evolution.push_back(curr_state);
-      prev_state = curr_state;
-    }
+    new_pattern[i] = (sum < 0) ? -1 : 1;
   }
-  return evolution;
+
+  return new_pattern;
 }
 
 double Hopfield::energy(Pattern const& state) {

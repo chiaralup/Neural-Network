@@ -58,7 +58,8 @@ class Hopfield {
   // Display screen(std::string const&);
   void matrix(std::vector<Pattern> const&);
   Matrix getMatrix();
-  std::vector<Pattern> update(Pattern const&);
+  //std::vector<Pattern> update(Pattern const&);
+  Pattern update(const Pattern& corr_pattern);
   //std::vector<Pattern> updating(Pattern const&, Matrix const&);
   double energy(Pattern const&);
 };
