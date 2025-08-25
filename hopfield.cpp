@@ -285,11 +285,9 @@ Pattern Hopfield::update(const Pattern& corr_pattern) {
 
   for (unsigned i{0}; i < n; ++i) {
     double sum{0.};
-
     for (unsigned j{0}; j < n; ++j) {
       sum += (W_[i][j] * new_pattern[j]);
     }
-
     new_pattern[i] = (sum < 0) ? -1 : 1;
   }
 
