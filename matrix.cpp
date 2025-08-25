@@ -37,13 +37,7 @@ int main() {
     }
 
     std::cout << "Evolution size: " << evolution.size() << '\n';
-    std::cout << "first transition" << evolution[0][0] << " " << evolution[0][1]
-              << " " << evolution[0][2] << " " << evolution[0][3] << " "
-              << evolution[0][4] << '\n';
-    std::cout << "second transition" << evolution[1][0] << " "
-              << evolution[1][1] << " " << evolution[1][2] << " "
-              << evolution[1][3] << " " << evolution[1][4] << '\n';
-              
+
     nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setPosition(475., 250.);
     corrupted.sprite.setScale(3.f, 3.f);
