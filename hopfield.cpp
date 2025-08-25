@@ -210,13 +210,14 @@ Matrix Hopfield::getMatrix() {
 
 Pattern Hopfield::update(const Pattern& corr_pattern) {
   Pattern new_pattern{corr_pattern};
+  Pattern old_pattern{corr_pattern};
 
   auto n{getN()};
 
   for (unsigned i{0}; i < n; ++i) {
     double sum{0.};
     for (unsigned j{0}; j < n; ++j) {
-      sum += (W_[i][j] * new_pattern[j]);
+      sum += (W_[i][j] * old_pattern[j]);
     }
     new_pattern[i] = (sum < 0) ? -1 : 1;
   }

@@ -1,3 +1,4 @@
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
 #include "hopfield.hpp"
@@ -20,16 +21,16 @@ int main() {
     filename += ".png";
 
     nn::Drawable initial{hop.loadSprite(filename)};
-    initial.sprite.setPosition(25., 250.);
+    initial.sprite.setPosition(25., 225.);
     nn::Pattern pattern{hop.pattern(initial.image)};
     nn::Drawable blackandwhite{hop.bawImage(pattern)};
-    blackandwhite.sprite.setPosition(250., 250.);
+    blackandwhite.sprite.setPosition(250., 225.);
     blackandwhite.sprite.setScale(3.f, 3.f);
 
     nn::Pattern corr_pattern{hop.corruption(pattern, 10)};
     nn::Drawable corrupted{hop.bawImage(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
-    corrupted.sprite.setPosition(450., 250.);
+    corrupted.sprite.setPosition(450., 225.);
 
     nn::Pattern prev_state{corr_pattern};
     nn::Pattern curr_state{prev_state};
@@ -69,7 +70,7 @@ int main() {
 
       nn::Drawable updated{hop.bawImage(curr_state)};
       updated.sprite.setScale(3.f, 3.f);
-      updated.sprite.setPosition(650., 250.);
+      updated.sprite.setPosition(650., 225.);
 
       window.draw(initial.sprite);
       window.draw(blackandwhite.sprite);

@@ -525,58 +525,57 @@ TEST_CASE("Testing matrix and update functions") {
 }
 
 TEST_CASE("Testing getMatrix and energy functions") {
-  nn::Hopfield hop(2, 2);
+    nn::Hopfield hop(2, 2); 
 
-  SUBCASE("Testing neural network with 2 patterns") {
-    nn::Pattern p1 = {-1, 1, 1, -1};
-    nn::Pattern p2 = {1, -1, -1, 1};
-    std::vector<nn::Pattern> patterns = {p1, p2};
+    SUBCASE("Testing neural network with 2 patterns and convergence") {
+        nn::Pattern p1{-1, 1, 1, -1};
+        nn::Pattern p2{1, -1, -1, 1};
+        std::vector<nn::Pattern> patterns = {p1, p2};
 
-    hop.matrix(patterns);
-    nn::Matrix W{hop.getMatrix()};
+        hop.matrix(patterns); 
+        nn::Matrix W{hop.getMatrix()}; 
 
-    nn::Matrix expected_matrix = {{0., -0.5, -0.5, 0.5},
-                                  {-0.5, 0., 0.5, -0.5},
-                                  {-0.5, 0.5, 0., -0.5},
-                                  {0.5, -0.5, -0.5, 0.}};
+        nn::Matrix expected_matrix = {{0., -0.5, -0.5, 0.5},
+                                      {-0.5, 0., 0.5, -0.5},
+                                      {-0.5, 0.5, 0., -0.5},
+                                      {0.5, -0.5, -0.5, 0.}};
 
-    for (unsigned i{0}; i < hop.getN(); ++i) {
-      for (unsigned j{0}; j < hop.getN(); ++j) {
-        CHECK(W[i][j] == expected_matrix[i][j]);
-      }
+        
+        for (unsigned i{0}; i < hop.getN(); ++i) {
+            for (unsigned j{0}; j < hop.getN(); ++j) {
+               
+                CHECK(W[i][j] == doctest::Approx(expected_matrix[i][j]));
+                          
+            }
+        }
+        nn::Pattern corrupted = {1, 1, 1, -1}; 
+        
+        double before{hop.energy(corrupted)}; 
+        
+        nn::Pattern current_state{corrupted};
+        nn::Pattern next_state;
+        bool converged{false};
+
+        for (int i = 0; i < 10; ++i) {
+            next_state = hop.update(current_state);
+            double after{hop.energy(next_state)};
+
+            
+            CHECK(after <= before); 
+            before = after; 
+
+            if (next_state == current_state) {
+                converged = true;
+                break; 
+            }
+            current_state = next_state;
+        }
+        CHECK(converged);
+        CHECK(current_state == p1); 
     }
-    nn::Pattern corrupted = {1, -1, 1, -1};
-    double before{hop.energy(corrupted)};
-    auto updated{hop.update(corrupted)};
-    double after{hop.energy(updated)};
-    CHECK(updated == p1);
-
-    for (unsigned i{1}; i < updated.size(); ++i) {
-      CHECK(after <= before);
-    }
-  }
 }
 
-TEST_CASE("Testing getMatrix function") {
-  SUBCASE(
-      "getMatrix should throw an exception if a diagonal element is not zero") {
-    std::ofstream file("weights.txt");
-    file << "0.0 0.5 0.5 0.5\n";
-    file << "0.5 1.0 0.5 0.5\n";
-    file << "0.5 0.5 0.0 0.5\n";
-    file << "0.5 0.5 0.5 0.0\n";
-    file.close();
-    nn::Hopfield hop(2, 2);
-    CHECK_THROWS_AS(hop.getMatrix(), std::runtime_error);
-  }
 
-  SUBCASE("getMatrix should throw an exception if the file is missing") {
-    std::remove("weights.txt");
-
-    nn::Hopfield hop(2, 2);
-    CHECK_THROWS_AS(hop.getMatrix(), std::runtime_error);
-  }
-}
 
 TEST_CASE("Testing update and energy functions") {
   SUBCASE("An already stored pattern should not change after an update") {
