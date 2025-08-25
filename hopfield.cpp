@@ -2,11 +2,11 @@
 
 namespace nn {
 
-unsigned int Hopfield::getWidth() const { return width_; }
+unsigned Hopfield::getWidth() const { return width_; }
 
-unsigned int Hopfield::getHeight() const { return height_; }
+unsigned Hopfield::getHeight() const { return height_; }
 
-unsigned int Hopfield::getN() const { return width_ * height_; }
+unsigned Hopfield::getN() const { return width_ * height_; }
 
 sf::Image Hopfield::loadImage(std::string const& filename) {
   sf::Image image;
@@ -38,76 +38,88 @@ Drawable Hopfield::loadSprite(std::string const& filename) {
   return drawable;
 }
 
-std::vector<Pixel> Hopfield::resize_image(sf::Image const& image) {
-  std::vector<Pixel> p;
+sf::Uint8 Hopfield::interpolation(unsigned p1, unsigned p2,
+                                  unsigned p3,  // TESTARLA
+                                  unsigned p4, double s, double t) {
+  const double p{std::round((1 - s) * (1 - t) * p1 + s * (1 - t) * p2 +
+                            (1 - s) * t * p3 + s * t * p4)};
+
+  assert(p < 256);
+
+  return static_cast<sf::Uint8>(p);
+}
+
+std::vector<sf::Color> Hopfield::resize_image(sf::Image const& image) {
+  std::vector<sf::Color> p;
+  p.reserve(getN());
   const auto size{image.getSize()};
   const double bx{static_cast<double>(width_) / static_cast<double>(size.x)};
   const double by{static_cast<double>(height_) / static_cast<double>(size.y)};
 
-  for (unsigned int r{0}; r < height_; ++r) {
+  for (unsigned r{0}; r < height_; ++r) {
     const double y{static_cast<double>(r) / by};
-    unsigned int j{static_cast<unsigned int>(y)};
+    unsigned j{static_cast<unsigned>(y)};
     if (j + 1 >= size.y) {
       j = size.y - 2;
     }
     const double t{y - j};
 
-    for (unsigned int c{0}; c < width_; ++c) {
+    assert(j + 1 < size.y && t >= 0. && t < 1.);
+
+    for (unsigned c{0}; c < width_; ++c) {
       const double x{static_cast<double>(c) / bx};
-      unsigned int i{static_cast<unsigned int>(x)};
+      unsigned i{static_cast<unsigned>(x)};
       if (i + 1 >= size.x) {
         i = size.x - 2;
       }
       const double s{x - i};
 
-      assert(i + 1 < size.x && j + 1 < size.y);
+      assert(i + 1 < size.x && s >= 0. && s < 1.);
 
       const sf::Color p1{image.getPixel(i, j)};
       const sf::Color p2{image.getPixel(i + 1, j)};
       const sf::Color p3{image.getPixel(i, j + 1)};
       const sf::Color p4{image.getPixel(i + 1, j + 1)};
 
-      const unsigned int pr{static_cast<unsigned int>(
-          std::round((1 - s) * (1 - t) * p1.r + s * (1 - t) * p2.r +
-                     (1 - s) * t * p3.r + s * t * p4.r))};
-      const unsigned int pg{static_cast<unsigned int>(
-          std::round((1 - s) * (1 - t) * p1.g + s * (1 - t) * p2.g +
-                     (1 - s) * t * p3.g + s * t * p4.g))};
-      const unsigned int pb{static_cast<unsigned int>(
-          std::round((1 - s) * (1 - t) * p1.b + s * (1 - t) * p2.b +
-                     (1 - s) * t * p3.b + s * t * p4.b))};
+      const auto pr{interpolation(p1.r, p2.r, p3.r, p4.r, s, t)};
+      const auto pg{interpolation(p1.g, p2.g, p3.g, p4.g, s, t)};
+      const auto pb{interpolation(p1.b, p2.b, p3.b, p4.b, s, t)};
 
-      assert(pr < 256 && pg < 256 && pb < 256);
-
-      p.push_back({pr, pg, pb});
+      p[r * width_ + c] = {pr, pg, pb};
     }
   }
   return p;
 }
 
-Pattern Hopfield::pattern(sf::Image const& image) {
+Pattern& Hopfield::pattern(sf::Image const& image) {
   Pattern pattern;
-  auto p{resize_image(image)};
-  for (unsigned int r{0}; r < height_; ++r) {
-    for (unsigned int c{0}; c < width_; ++c) {
-      unsigned int index = r * width_ + c;
-      assert(index < p.size());
+  pattern.reserve(getN());
+  auto const& p{resize_image(image)};
 
-      Pixel& pix = p[index];
-      double m{(pix.pr + pix.pg + pix.pb) / 3.0};
-
-      pattern.push_back(m < 127 ? -1 : 1);
-    }
+  for (const auto& pix : p) {
+    double m{(pix.r + pix.g + pix.b) / 3.0};
+    pattern.push_back(m < threshold_ ? -1 : 1);
   }
+
+  assert(pattern.size() == getN());
+
   return pattern;
 }
 
 std::vector<Pattern> Hopfield::loadPatterns() {
   std::vector<Pattern> patterns;
-  for (unsigned int i{0}; i < files_.size(); ++i) {
-    sf::Image image{loadImage(files_[i])};
+
+  std::vector<std::string> const files = {"Avogadro.png", "Curie.png",
+                                 "Einstein.png", "Heisenberg.png",
+                                 "Hopfield.png", "Schrodinger.png"};
+
+  for (auto const& filename : files) {
+    sf::Image const image{loadImage(filename)};
     patterns.push_back(pattern(image));
   }
+
+  assert(patterns.size() == files.size());
+
   return patterns;
 }
 
@@ -115,9 +127,9 @@ Drawable Hopfield::baw_image(Pattern const& pattern) {
   Drawable drawable;
   drawable.image.create(width_, height_, sf::Color::Black);
 
-  for (unsigned int i{0}; i < pattern.size(); ++i) {
-    unsigned int row{i / width_};
-    unsigned int col{i % width_};
+  for (unsigned i{0}; i < pattern.size(); ++i) {
+    unsigned row{i / width_};
+    unsigned col{i % width_};
 
     if (pattern[i] == 1) {
       drawable.image.setPixel(col, row, sf::Color::White);
@@ -130,15 +142,15 @@ Drawable Hopfield::baw_image(Pattern const& pattern) {
   return drawable;
 }
 
-Pattern Hopfield::corruption(Pattern const& pattern, unsigned int ratio) {
+Pattern Hopfield::corruption(Pattern const& pattern, unsigned ratio) {
   std::default_random_engine eng;
-  std::uniform_int_distribution<unsigned int> random_pix(0, getN() - 1);
+  std::uniform_int_distribution<unsigned> random_pix(0, getN() - 1);
 
   Pattern corr_pattern{pattern};
 
   // modificare
 
-  for (unsigned int i{0}; i < (getN() / ratio); ++i) {
+  for (unsigned i{0}; i < (getN() / ratio); ++i) {
     auto a{random_pix(eng)};
     auto b{random_pix(eng)};
 
@@ -192,25 +204,19 @@ void Hopfield::matrix(std::vector<Pattern> const&
 
   Matrix W(getN(), std::vector<double>(getN(), 0.));  // lasciamo così o W_?
 
-  for (unsigned int i{0}; i < getN(); ++i) {
-    for (unsigned int j{i}; j < getN(); ++j) {
-      if (i == j) {
-        W[i][j] = 0.;
-      } else {
-        double sum = std::accumulate(patterns.begin(), patterns.end(), 0.,
-                                     [i, j](double total, const Pattern& p) {
-                                       return total + p[i] * p[j];
-                                     });
-        W[i][j] = static_cast<double>(sum) / static_cast<double>(getN());
-        W[j][i] = W[i][j];
-      }
-      // file << W[i][j] << " ";
+  for (unsigned i{0}; i < getN(); ++i) {
+    for (unsigned j{i + 1}; j < getN(); ++j) {
+      double sum = std::accumulate(patterns.begin(), patterns.end(), 0.,
+                                   [i, j](double total, Pattern const& p) {
+                                     return total + p[i] * p[j];
+                                   });
+      W[i][j] = static_cast<double>(sum) / static_cast<double>(getN());
+      W[j][i] = W[i][j];
     }
-    // file << '\n';
   }
-  // file.close();
-  for (unsigned int i{0}; i < getN(); ++i) {
-    for (unsigned int j{0}; j < getN(); ++j) {
+
+  for (unsigned i{0}; i < getN(); ++i) {
+    for (unsigned j{0}; j < getN(); ++j) {
       file << W[i][j] << " ";
     }
     file << '\n';
@@ -223,9 +229,9 @@ Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
   if (!file) {
     throw std::runtime_error{"Impossible to open file!"};
   }
-  for (unsigned int i{0}; i < getN(); ++i) {
-    for (unsigned int j{0}; j < getN(); ++j) {
-      double Wij{0.};
+  for (unsigned i{0}; i < getN(); ++i) {
+    for (unsigned j{0}; j < getN(); ++j) {
+      double Wij;
       file >> Wij;
       W_[i][j] = Wij;
       if ((i == j) && (W_[i][j] != 0)) {
@@ -248,11 +254,11 @@ std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern,
   bool finished{false};
 
   while (!finished) {
-    for (unsigned int i{0}; i < getN(); ++i) {
+    for (unsigned i{0}; i < getN(); ++i) {
       Pattern old_pattern{new_pattern};
       double sum{0.};
 
-      for (unsigned int j{0}; j < getN(); ++j) {
+      for (unsigned j{0}; j < getN(); ++j) {
         sum += (W[i][j] * new_pattern[j]);
       }
       new_pattern[i] = (sum < 0) ? -1 : 1;
@@ -285,8 +291,8 @@ std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern,
 double Hopfield::energy(Pattern const& state) {
   double energy;
   double sum{0.};
-  for (unsigned int i{0}; i < getN(); ++i) {
-    for (unsigned int j{0}; j < getN(); ++j) {
+  for (unsigned i{0}; i < getN(); ++i) {
+    for (unsigned j{0}; j < getN(); ++j) {
       sum += (W_[i][j] * state[i] * state[j]);
     }
   }

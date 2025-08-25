@@ -13,9 +13,9 @@ using Pattern = std::vector<int>;
 using Matrix = std::vector<std::vector<double>>;
 
 struct Pixel {
-  unsigned int pr;
-  unsigned int pg;
-  unsigned int pb;
+  unsigned pr;
+  unsigned pg;
+  unsigned pb;
 };
 
 struct Drawable {
@@ -31,30 +31,36 @@ struct Display {
 };
 
 class Hopfield {
-  unsigned int width_;
-  unsigned int height_;
+  unsigned width_;
+  unsigned height_;
+  unsigned threshold_{127};
   Matrix W_;
 
-  std::vector<std::string> files_{"Avogadro.png", "Curie.png",
-                                  "Einstein.png", "Heisenberg.png",
-                                  "Hopfield.png", "Schrodinger.png"};
-
  public:
-  Hopfield(unsigned int width, unsigned int height)
+  Hopfield(unsigned width, unsigned height)
       : width_{width},
         height_{height},
         W_{width * height, std::vector<double>(width * height, 0.)} {}
-  unsigned int getWidth() const;
-  unsigned int getHeight() const;
-  unsigned int getN() const;
+
+  Hopfield(unsigned width, unsigned height, unsigned threshold)
+      : width_{width},
+        height_{height},
+        threshold_{threshold},
+        W_{width * height, std::vector<double>(width * height, 0.)} {}
+
+  unsigned getWidth() const;
+  unsigned getHeight() const;
+  unsigned getN() const;
   sf::Image loadImage(
       std::string const&);  // è necessario che stiano dentro la classe?
   Drawable loadSprite(
       std::string const&);  // è necessario che stiano dentro la classe?
-  std::vector<Pixel> resize_image(sf::Image const&);
-  Pattern pattern(sf::Image const&);
+  sf::Uint8 interpolation(unsigned p1, unsigned p2, unsigned p3, unsigned p4,
+                          double s, double t);
+  std::vector<sf::Color> resize_image(sf::Image const&);
+  Pattern& pattern(sf::Image const&);
   Drawable baw_image(Pattern const&);
-  Pattern corruption(Pattern const&, unsigned int);
+  Pattern corruption(Pattern const&, unsigned);
   std::vector<Pattern> loadPatterns();
   // Display screen(std::string const&);
   void matrix(std::vector<Pattern> const&);
