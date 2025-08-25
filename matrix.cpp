@@ -22,7 +22,7 @@ int main() {
     nn::Drawable initial{hop.loadSprite(filename)};
     initial.sprite.setPosition(25., 250.);
     nn::Pattern pattern{hop.pattern(initial.image)};
-    nn::Drawable blackandwhite{hop.baw_image(pattern)};
+    nn::Drawable blackandwhite{hop.bawImage(pattern)};
     blackandwhite.sprite.setPosition(250., 250.);
     blackandwhite.sprite.setScale(3.f, 3.f);
 
@@ -30,7 +30,7 @@ int main() {
     std::vector<nn::Pattern> evolution{hop.update(corr_pattern)};
     std::vector<nn::Drawable> transitions;
     for (auto const& p : evolution) {
-      nn::Drawable transition{hop.baw_image(p)};
+      nn::Drawable transition{hop.bawImage(p)};
       transition.sprite.setScale(3.f, 3.f);
       transition.sprite.setPosition(650., 250.);
       transitions.push_back(transition);
@@ -38,7 +38,7 @@ int main() {
 
     std::cout << "Evolution size: " << evolution.size() << '\n';
 
-    nn::Drawable corrupted{hop.baw_image(corr_pattern)};
+    nn::Drawable corrupted{hop.bawImage(corr_pattern)};
     corrupted.sprite.setPosition(475., 250.);
     corrupted.sprite.setScale(3.f, 3.f);
 

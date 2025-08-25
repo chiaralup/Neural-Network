@@ -38,8 +38,7 @@ Drawable Hopfield::loadSprite(std::string const& filename) {
   return drawable;
 }
 
-sf::Uint8 Hopfield::interpolation(unsigned p1, unsigned p2,
-                                  unsigned p3,  // TESTARLA
+sf::Uint8 Hopfield::interpolation(unsigned p1, unsigned p2, unsigned p3,
                                   unsigned p4, double s, double t) {
   double const p{std::round((1 - s) * (1 - t) * p1 + s * (1 - t) * p2 +
                             (1 - s) * t * p3 + s * t * p4)};
@@ -49,9 +48,9 @@ sf::Uint8 Hopfield::interpolation(unsigned p1, unsigned p2,
   return static_cast<sf::Uint8>(p);
 }
 
-std::vector<sf::Color> Hopfield::resize_image(sf::Image const& image) {
+std::vector<sf::Color> Hopfield::resizeImage(sf::Image const& image) {
   auto const size{image.getSize()};
-  if (size.x < 2 || size.y < 2) {  // TESTARE
+  if (size.x < 2 || size.y < 2) {
     throw std::runtime_error(
         "resize_image: too small image, both dimensions must be >= 3");
   }
@@ -64,17 +63,13 @@ std::vector<sf::Color> Hopfield::resize_image(sf::Image const& image) {
     double y{static_cast<double>(r) / by};
     unsigned j{static_cast<unsigned>(y)};
 
-    const double t{j + 1 < size.y
-                       ? y - j
-                       : 0.};  // in questo modo p3 e p4 dopo non hanno peso
+    const double t{j + 1 < size.y ? y - j : 0.};
 
     for (unsigned c{0}; c < width_; ++c) {
       double x{static_cast<double>(c) / bx};
       unsigned i{static_cast<unsigned>(x)};
 
-      double const s{i + 1 < size.x
-                         ? x - i
-                         : 0.};  // in questo modo p2 e p4 dopo non hanno peso
+      double const s{i + 1 < size.x ? x - i : 0.};
 
       sf::Color p1{image.getPixel(i, j)};
       sf::Color p2{(i + 1 < size.x) ? image.getPixel(i + 1, j) : p1};
@@ -95,7 +90,7 @@ std::vector<sf::Color> Hopfield::resize_image(sf::Image const& image) {
 
 Pattern Hopfield::pattern(sf::Image const& image) {
   Pattern pattern;
-  auto const& p{resize_image(image)};
+  auto const& p{resizeImage(image)};
 
   for (const auto& pix : p) {
     double m{(pix.r + pix.g + pix.b) / 3.0};
@@ -107,7 +102,7 @@ Pattern Hopfield::pattern(sf::Image const& image) {
   return pattern;
 }
 
-Drawable Hopfield::baw_image(Pattern const& pattern) {
+Drawable Hopfield::bawImage(Pattern const& pattern) {
   Drawable drawable;
   drawable.image.create(width_, height_, sf::Color::Black);
 
@@ -166,9 +161,7 @@ std::vector<Pattern> Hopfield::loadPatterns() {
   return patterns;
 }
 
-void Hopfield::matrix(std::vector<Pattern> const&
-                          patterns) {  // L'ABBIAMO USATA SOLO PER SCRIVERE SU
-                                       // FILE. CONTROLLARE IL TIPO DI RITORNO
+void Hopfield::matrix(std::vector<Pattern> const& patterns) {
   std::ofstream file("weights.txt");
   if (!file.is_open()) {
     throw std::runtime_error{"Unable to open the file weight.txt"};
@@ -176,8 +169,8 @@ void Hopfield::matrix(std::vector<Pattern> const&
 
   auto n{getN()};
 
-  for (unsigned i = 0; i < n; ++i) {
-    for (unsigned j = i + 1; j < n; ++j) {
+  for (unsigned i{0}; i < n; ++i) {
+    for (unsigned j{i + 1}; j < n; ++j) {
       int sum{0};
       for (auto const& p : patterns) {
         sum += p[i] * p[j];
@@ -195,42 +188,7 @@ void Hopfield::matrix(std::vector<Pattern> const&
   }
 }
 
-// Display Hopfield::screen(const std::string& filename) {
-//   //  Display display;
-//   Drawable initial{loadSprite(filename)};
-//   initial.sprite.setPosition(25., 250.);
-//
-//   std::vector<int> baw_pattern{pattern(initial.image)};
-//   Drawable baw{blackandwhite(baw_pattern)};
-//   baw.sprite.setPosition(650., 250.);
-//
-//   // std::vector<int> corr_pattern{corruption(baw_pattern)};
-//   Drawable corrupted{blackandwhite(corruption(baw_pattern))};
-//   corrupted.sprite.setPosition(1150., 250.);
-//
-//   Display display = {initial, baw, corrupted};
-//
-//   return display;
-
-// Drawable initial{Hopfield::loadSprite(filename)};
-// initial.sprite.setPosition(25., 250.);
-//
-// Drawable blackandwhite;
-// std::vector<int> baw_pattern{Hopfield::pattern(initial.image)};
-// blackandwhite = Hopfield::blackandwhite(baw_pattern);
-// blackandwhite.sprite.setPosition(650., 250.);
-//
-// Drawable corrupted;
-// // std::vector<int> corr_pattern{corruption(baw_pattern)};
-// corrupted =
-// Hopfield::blackandwhite(Hopfield::corruption(baw_pattern));
-// corrupted.sprite.setPosition(1150., 250.);
-//
-// Display display = {initial, blackandwhite, corrupted};
-//
-// return display;}
-
-Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
+Matrix Hopfield::getMatrix() {
   std::ifstream file{"./weights.txt"};
   if (!file) {
     throw std::runtime_error{"Unable to open the file weight.txt"};
@@ -249,34 +207,6 @@ Matrix Hopfield::getMatrix() {  // VERIFICARE IL RETURN TYPE
   }
   return W_;
 }
-
-// std::vector<Pattern> Hopfield::update(Pattern const& corr_pattern) {
-//   Pattern prev_state{corr_pattern};
-//   Pattern curr_state{corr_pattern};
-//   std::vector<Pattern> evolution;
-//   evolution.push_back(corr_pattern);
-//
-//   bool finished{false};
-//   auto n{getN()};
-//
-//   while (!finished) {
-//     for (unsigned i{0}; i < n; ++i) {
-//       double sum{0.};
-//       for (unsigned j{0}; j < n; ++j) {
-//         sum += (W_[i][j] * prev_state[j]);
-//       }
-//       curr_state[i] = (sum < 0) ? -1 : 1;
-//     }
-//
-//     if (curr_state == prev_state) {
-//       finished = true;
-//     } else {
-//       evolution.push_back(curr_state);
-//       prev_state = curr_state;
-//     }
-//   }
-//   return evolution;
-// }
 
 Pattern Hopfield::update(const Pattern& corr_pattern) {
   Pattern new_pattern{corr_pattern};
@@ -304,7 +234,7 @@ double Hopfield::energy(Pattern const& state) {
     }
   }
   energy = -energy;
-  return energy;  // divisione per 2 considerata nella somma solo su j>i
+  return energy;
 }
 
 }  // namespace nn
