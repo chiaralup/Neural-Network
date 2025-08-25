@@ -37,7 +37,7 @@ find_package(SFML 2.6 COMPONENTS graphics REQUIRED)
 
 # dichiara un eseguibile chiamato "progetto", prodotto a partire dai file sorgente indicati
 # sostituire "progetto" con il nome del proprio eseguibile e i file sorgente con i propri (con nomi sensati!)
-add_executable(neuralnet hopfield.cpp main.cpp)
+add_executable(neuralnet hopfield.cpp matrix.cpp)
 # nel caso si usi SFML. analogamente per eventuali altre librerie
 target_link_libraries(neuralnet PRIVATE sfml-graphics)
 
@@ -48,7 +48,7 @@ target_link_libraries(neuralnet PRIVATE sfml-graphics)
 if (BUILD_TESTING)
 
   # aggiungi l'eseguibile progetto.t
-  add_executable(neuralnet.t test.cpp hopfield.cpp)
+  add_executable(neuralnet.t hopfield.test.cpp hopfield.cpp)
   # librerie necessarie per il test
   target_link_libraries(neuralnet.t PRIVATE sfml-graphics)
   # aggiungi l'eseguibile progetto.t alla lista dei test

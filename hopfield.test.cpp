@@ -319,10 +319,9 @@ TEST_CASE("Testing update function with zero-initialized weights") {
       "Any input pattern should transform to all ones due to zero weights") {
     nn::Hopfield hop(2, 2);
     unsigned N{hop.getN()};
-    nn::Matrix W(N, std::vector<double>(N, 0.));
     nn::Pattern pat = {1, -1, 1, -1};
     nn::Pattern expectedPat(N, 1);
-    auto newPat{hop.update(pat, W)};
+    auto newPat{hop.update(pat)};
     auto last_index{newPat.size() - 1};
 
     std::cout << newPat.size() << '\n';
@@ -338,7 +337,6 @@ TEST_CASE("Testing update function with zero-initialized weights") {
   SUBCASE("A 4x4 pattern should transform to all ones due to zero weights") {
     nn::Hopfield hop(4, 4);
     unsigned N{hop.getN()};
-    nn::Matrix W(N, std::vector<double>(N, 0.));
 
     nn::Pattern pattern = {1, -1, 1, -1, -1, 1, -1, 1,
                            1, -1, 1, -1, -1, 1, -1, 1};
@@ -346,7 +344,7 @@ TEST_CASE("Testing update function with zero-initialized weights") {
     CHECK(pattern.size() == N);
     nn::Pattern expectedPattern(N, 1);
 
-    auto actualPattern{hop.update(pattern, W)};
+    auto actualPattern{hop.update(pattern)};
     auto last_index{actualPattern.size() - 1};
 
     CHECK(actualPattern[last_index] == expectedPattern);
@@ -377,7 +375,7 @@ TEST_CASE("Testing neural network with 4 neurons") {
     }
     nn::Pattern corrupted = {1, -1, 1, -1};
 
-    auto updated{hop.update(corrupted, W)};
+    auto updated{hop.update(corrupted)};
     auto last_index{updated.size() - 1};
     CHECK(updated[last_index] == p1);
 

@@ -120,13 +120,13 @@ int main() {
     nn::Pattern baw_pattern{hop.pattern(initial.image)};
     nn::Drawable blackandwhite{hop.baw_image(baw_pattern)};
     blackandwhite.sprite.setScale(3.f, 3.f);
-    blackandwhite.sprite.setPosition(425., 225.);
+    blackandwhite.sprite.setPosition(350., 180.);
     nn::Pattern corr_pattern{hop.corruption(baw_pattern, 10)};
     nn::Drawable corrupted{hop.baw_image(corr_pattern)};
     corrupted.sprite.setScale(3.f, 3.f);
-    corrupted.sprite.setPosition(350., 225.);
+    corrupted.sprite.setPosition(425., 180.);
 
-    auto evolution{hop.update(corr_pattern, W)};
+    auto evolution{hop.update(corr_pattern)};
     std::cout << "Evolution size: " << evolution.size() << '\n';
     size_t step{0};
 

@@ -33,19 +33,12 @@ struct Drawable {
 class Hopfield {
   unsigned width_;
   unsigned height_;
-  unsigned threshold_{127};
   Matrix W_;
 
  public:
   Hopfield(unsigned width, unsigned height)
       : width_{width},
         height_{height},
-        W_{width * height, std::vector<double>(width * height, 0.)} {}
-
-  Hopfield(unsigned width, unsigned height, unsigned threshold)
-      : width_{width},
-        height_{height},
-        threshold_{threshold},
         W_{width * height, std::vector<double>(width * height, 0.)} {}
 
   unsigned getWidth() const;
@@ -65,8 +58,8 @@ class Hopfield {
   // Display screen(std::string const&);
   void matrix(std::vector<Pattern> const&);
   Matrix getMatrix();
-  std::vector<Pattern> update(Pattern const&, Matrix const&);
-  std::vector<Pattern> updating(Pattern const&, Matrix const&);
+  std::vector<Pattern> update(Pattern const&);
+  //std::vector<Pattern> updating(Pattern const&, Matrix const&);
   double energy(Pattern const&);
 };
 }  // namespace nn
